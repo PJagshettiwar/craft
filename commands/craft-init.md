@@ -66,8 +66,14 @@ If `openspec/` is absent, tell the user:
 
 ## Step 5 — Wire cross-IDE
 Ask which tools to wire (Claude / Cursor / Copilot / all):
-- **Claude Code:** add `@AGENTS.md` to `CLAUDE.md` (create if missing) so Claude reads the
-  always-on pipeline rules. Skills/agents/commands are already symlinked globally.
+- **Claude Code:** add `@AGENTS.md` and `@PROJECT.md` to `CLAUDE.md` (create if missing) so
+  Claude reads the always-on pipeline rules. Also add the source-of-truth rule:
+  ```
+  ## Spec Workflow
+  - ALL specs MUST use OpenSpec format (`openspec/changes/<name>/`)
+  - NEVER treat brainstorming design docs as the final spec
+  - After brainstorming approval, ALWAYS proceed to `/craft-propose`
+  ```
 - **Cursor:** `AGENTS.md` is read natively — no changes needed.
 - **Copilot:** `AGENTS.md` is read natively. Optionally create
   `.github/copilot-instructions.md` as a pointer. Ask before creating.

@@ -20,8 +20,13 @@ module layout before acting.
    **Gate: `openspec validate --strict`.**
 6. **Archive** → `openspec archive <name>` (deltas merge into `openspec/specs/`).
 
-Each stage reads the upstream artifact and writes exactly one downstream artifact. The change
-folder is the shared source of truth.
+Each stage reads the upstream artifact and writes exactly one downstream artifact. The
+`openspec/changes/<name>/` folder is the **sole source of truth** for specs, design, and tasks.
+
+**Source of truth rule:** If `superpowers:brainstorming` writes a design doc to
+`docs/superpowers/specs/`, that is a working draft — NOT the canonical spec. The canonical
+spec lives in OpenSpec artifacts only (`openspec/changes/<name>/`). After brainstorming
+approval, always proceed to create OpenSpec artifacts via `/craft-propose`.
 
 ### EARS acceptance-criteria forms
 - Ubiquitous: `The <system> SHALL <response>`

@@ -19,8 +19,13 @@ then immediately begin `superpowers:brainstorming` — ask ONE clarifying questi
 to understand intent, constraints, and success criteria before proposing any design or code.
 
 The pipeline (fully driven by skills — you don't pick models or agents):
-1. `superpowers:brainstorming` → clarify intent, approve design
-2. `/craft-propose` → create OpenSpec artifacts
+1. `superpowers:brainstorming` → clarify intent, approve design direction (produces a **design brief**, NOT the final spec)
+2. `/craft-propose` → create OpenSpec artifacts (proposal, specs, design, tasks) — this is the **canonical spec**
 3. `/craft-apply` + `implementing-with-tdd` → TDD implementation
 4. `reviewing-and-verifying` → spec compliance, quality, security, DoD
 5. `/craft-archive` → archive and merge delta specs
+
+**IMPORTANT:** After brainstorming approval, ALWAYS proceed to `/craft-propose` to create
+proper OpenSpec artifacts. The brainstorming design doc is a working draft — the OpenSpec
+change folder (`openspec/changes/<name>/`) is the source of truth. Do NOT stop after
+brainstorming or treat its output as the final spec.
