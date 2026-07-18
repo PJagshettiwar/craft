@@ -25,8 +25,10 @@ If either is false, send the user back to /craft-archive.
 
 ## Part 1 — Create the Pull Request
 
-**Step 1** — Extract the Jira ticket ID from the current branch name (e.g. `FEVNT-10042` from
-`FEVNT-10042`), or use `$ARGUMENTS` if provided.
+**Step 1** — Extract the Jira ticket ID from the current branch name using the pattern
+`[A-Z]+-\d+` (e.g. `FEVNT-10042` from `feature/FEVNT-10042-add-rate-limiting`),
+or use `$ARGUMENTS` if provided. If no ticket ID can be extracted, use **AskUserQuestion**
+to ask for it.
 
 **Step 2** — Read `.github/PULL_REQUEST_TEMPLATE.md` to get the PR body template.
 
@@ -82,8 +84,9 @@ Use **AskUserQuestion** to ask questions in groups (minimise interruptions):
 6. "How long did it actually take with Claude Code (end to end)?"
    Options: Under 1 hour / 1–4 hours / ~half a day / 1–2 days / More than 2 days
 
-**After all answers**, post a Jira comment using `mcp__mcp-atlassian__jira_add_comment`
-on the extracted Jira ticket ID:
+**After all answers**, attempt to post a Jira comment on the extracted ticket ID.
+Use a Jira MCP tool if available (e.g. `jira_add_comment`). If no Jira MCP is configured,
+print the formatted survey to the terminal and suggest the user copy it to the ticket manually.
 
 ```
 Ticket AI debrief:
@@ -91,10 +94,10 @@ Ticket AI debrief:
 **1. What manual coding or non-coding steps did you need to take (outside of prompting Claude Code)?**
 <answer>
 
-**2. If it required manual steps, what did you do to train Claude to be more effective next time?**
+**2. What percentage of the code was written by Claude Code?**
 <answer>
 
-**3. What percentage of the code was written by CC?**
+**3. If it required manual steps, what did you do to train Claude to be more effective next time?**
 <answer>
 
 **4. If Claude did not write 100% of the code, why not?**

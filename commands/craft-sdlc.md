@@ -4,7 +4,7 @@ argument-hint: "<problem statement>"
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 ---
 
-# /sdlc
+# /craft-sdlc
 
 Problem: **$ARGUMENTS**
 
@@ -14,13 +14,13 @@ not on prompts.
 **If no problem statement was given** (empty `$ARGUMENTS`), use **AskUserQuestion** first:
 > "What do you want to build or fix? Describe the problem and what success looks like."
 
-**If a problem statement was given**, read `PROJECT.md` (run `/init` first if missing),
+**If a problem statement was given**, read `PROJECT.md` (run `/craft-init` first if missing),
 then immediately begin `superpowers:brainstorming` — ask ONE clarifying question at a time
 to understand intent, constraints, and success criteria before proposing any design or code.
 
 The pipeline (fully driven by skills — you don't pick models or agents):
 1. `superpowers:brainstorming` → clarify intent, approve design
-2. `openspec-propose` → create OpenSpec artifacts
-3. `openspec-apply-change` + `implementing-with-tdd` → TDD implementation
+2. `/craft-propose` → create OpenSpec artifacts
+3. `/craft-apply` + `implementing-with-tdd` → TDD implementation
 4. `reviewing-and-verifying` → spec compliance, quality, security, DoD
-5. `openspec-archive-change` → archive and merge delta specs
+5. `/craft-archive` → archive and merge delta specs

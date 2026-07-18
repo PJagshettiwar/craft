@@ -1,6 +1,6 @@
 ---
 name: designing-architecture
-description: Use when the brainstorming design doc needs technical depth before OpenSpec artifacts are created — verifying architecture decisions, catching design gaps, and grounding the design in the real codebase. Use before or during openspec-propose.
+description: Use when the brainstorming design doc needs technical depth before OpenSpec artifacts are created — verifying architecture decisions, catching design gaps, and grounding the design in the real codebase. Use before or during /craft-propose.
 ---
 
 # Designing Architecture
@@ -31,7 +31,7 @@ For each architectural decision in the brainstorming design:
    > "I'm considering [option A] because [reason], but [option B] is also possible.
    > Which fits better with your goals?"
 
-## Step 3 — The design.md structure (for openspec-propose)
+## Step 3 — The design.md structure (for /craft-propose)
 The `openspec instructions design --change "<name>" --json` will provide the exact template.
 Typically:
 ```markdown
@@ -54,14 +54,14 @@ Typically:
 - **Reuse first.** Prefer existing patterns before introducing new abstractions.
 - **Simplest design that meets requirements.** Complexity only when a requirement forces it.
 - **Every decision traces to a requirement.** No gold-plating; no speculative abstractions.
-- **Flag uncertainty.** A low-confidence decision surface to the user > a wrong decision shipped.
+- **Flag uncertainty.** A low-confidence decision surfaced to the user > a wrong decision shipped.
 
 ## Gate
 Every requirement from the brainstorming design maps to a design decision. Every decision
 has a rationale. No orphaned decisions. Confirm with the user on anything low-confidence
-before openspec-propose runs.
+before /craft-propose runs.
 
 ## Related skills
 - **REQUIRED before this skill:** `superpowers:brainstorming`
 - **Codebase exploration:** dispatch `codebase-explorer` agent
-- **After this skill:** `writing-requirements` (openspec-propose)
+- **After this skill:** `writing-requirements` (/craft-propose)

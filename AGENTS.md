@@ -2,11 +2,11 @@
 
 Always-on operating rules for any AI coding agent (Claude Code, Cursor, Copilot, …) working in
 this repo. Cursor and Copilot read this file natively; Claude Code reads it via a CLAUDE.md
-`@import` set up by `/init`.
+`@import` set up by `/craft-init`.
 
 ## How to work here
 When given a problem statement, follow the **spec-driven SDLC pipeline**. Do not jump straight to
-code. Read `PROJECT.md` (written by `/init`) for this project's build/test commands, style, and
+code. Read `PROJECT.md` (written by `/craft-init`) for this project's build/test commands, style, and
 module layout before acting.
 
 ### Pipeline

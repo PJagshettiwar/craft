@@ -3,6 +3,7 @@
   "description": "Lean, cross-IDE, self-configuring spec-driven SDLC toolkit. Give it a problem statement; it drives requirements to archive using OpenSpec, auto-selecting the right skill and model.",
   "version": "0.1.0",
   "license": "MIT",
+  "repository": "https://github.com/PJagshettiwar/craft",
   "keywords": [
     "sdlc",
     "spec-driven",

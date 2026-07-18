@@ -1,6 +1,6 @@
 ---
 name: reviewing-and-verifying
-description: Use when implementation tasks are complete — reviewing code against the OpenSpec delta specs (spec compliance first, then quality and security), running the definition-of-done gate, and archiving the change. Use after openspec-apply-change reports all tasks done.
+description: Use when implementation tasks are complete — reviewing code against the OpenSpec delta specs (spec compliance first, then quality and security), running the definition-of-done gate, and archiving the change. Use after /craft-apply reports all tasks done.
 ---
 
 # Reviewing and Verifying
@@ -50,7 +50,7 @@ Run each of these and show the real output before claiming the gate is passed:
 
 ## Stage 4 — Archive
 When spec-reviewer is APPROVE(-WITH-NITS) and all commands pass, invoke
-`openspec-archive-change`. It will:
+`/craft-archive`. It will:
 1. Check artifact + task completion (prompt if anything incomplete).
 2. Show delta spec sync assessment.
 3. Run `mv "<changeRoot>" "<changesDir>/archive/YYYY-MM-DD-<name>"`.
@@ -70,5 +70,5 @@ All tasks complete ✓
 - **REQUIRED before claiming done:** `superpowers:verification-before-completion`
 - **For any bugs found:** `superpowers:systematic-debugging`
 - **Code review execution:** dispatch `spec-reviewer` agent
-- **Archive execution:** `openspec-archive-change`
-- **Before this skill:** `implementing-with-tdd`, `openspec-apply-change`
+- **Archive execution:** `/craft-archive`
+- **Before this skill:** `implementing-with-tdd`, `/craft-apply`
