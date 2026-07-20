@@ -2,11 +2,11 @@
 
 Always-on operating rules for any AI coding agent (Claude Code, Cursor, Copilot, …) working in
 this repo. Cursor and Copilot read this file natively; Claude Code reads it via a CLAUDE.md
-`@import` set up by `/craft-init`.
+`@import` set up by `/init`.
 
 ## How to work here
 When given a problem statement, follow the **spec-driven SDLC pipeline**. Do not jump straight to
-code. Read `PROJECT.md` (written by `/craft-init`) for this project's build/test commands, style, and
+code. Read `PROJECT.md` (written by `/init`) for this project's build/test commands, style, and
 module layout before acting.
 
 ### Pipeline
@@ -20,13 +20,8 @@ module layout before acting.
    **Gate: `openspec validate --strict`.**
 6. **Archive** → `openspec archive <name>` (deltas merge into `openspec/specs/`).
 
-Each stage reads the upstream artifact and writes exactly one downstream artifact. The
-`openspec/changes/<name>/` folder is the **sole source of truth** for specs, design, and tasks.
-
-**Source of truth rule:** If `superpowers:brainstorming` writes a design doc to
-`docs/superpowers/specs/`, that is a working draft — NOT the canonical spec. The canonical
-spec lives in OpenSpec artifacts only (`openspec/changes/<name>/`). After brainstorming
-approval, always proceed to create OpenSpec artifacts via `/craft-propose`.
+Each stage reads the upstream artifact and writes exactly one downstream artifact. The change
+folder is the shared source of truth.
 
 ### EARS acceptance-criteria forms
 - Ubiquitous: `The <system> SHALL <response>`

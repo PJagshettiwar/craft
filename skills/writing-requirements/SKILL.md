@@ -1,20 +1,20 @@
 ---
 name: writing-requirements
-description: Use in phase 2 of the SDLC after brainstorming is complete and you need to capture approved intent as OpenSpec artifacts — running /craft-propose to create proposal.md, design.md, and tasks.md with EARS acceptance criteria.
+description: Use in phase 2 of the SDLC after brainstorming is complete and you need to capture approved intent as OpenSpec artifacts — running openspec-propose to create proposal.md, design.md, and tasks.md with EARS acceptance criteria.
 ---
 
 # Writing Requirements
 
 ## Overview
 Convert an approved brainstorming design into OpenSpec artifacts. This skill delegates to
-`/craft-propose` for the actual artifact creation — do not hand-write proposal/design/tasks
+`openspec-propose` for the actual artifact creation — do not hand-write proposal/design/tasks
 files; let the CLI generate the correct structure.
 
 **REQUIRED BACKGROUND:** You MUST have completed `superpowers:brainstorming` and have a
 user-approved design before invoking this skill.
 
 <HARD-GATE>
-Do NOT invoke /craft-propose or create any OpenSpec change until superpowers:brainstorming
+Do NOT invoke openspec-propose or create any OpenSpec change until superpowers:brainstorming
 has produced a written design doc that the user has approved.
 </HARD-GATE>
 
@@ -27,8 +27,8 @@ important unknown first. Typical questions:
 
 Do NOT create the change until you have enough to write a solid proposal.
 
-## Step 2 — Run /craft-propose
-Invoke the `/craft-propose` skill. It will:
+## Step 2 — Run openspec-propose
+Invoke the `openspec-propose` skill. It will:
 1. Run `openspec new change "<name>"`
 2. Run `openspec status --change "<name>" --json` to get artifact order + paths
 3. For each artifact, run `openspec instructions <artifact-id> --change "<name>" --json`
@@ -68,5 +68,5 @@ Wait for confirmation.
 
 ## Related skills
 - **REQUIRED before this skill:** `superpowers:brainstorming`
-- **Artifact creation:** `/craft-propose`
-- **After this skill:** `/craft-apply` + `implementing-with-tdd`
+- **Artifact creation:** `openspec-propose`
+- **After this skill:** `openspec-apply-change` + `implementing-with-tdd`

@@ -6,11 +6,11 @@ description: Use when OpenSpec artifacts (proposal, design) exist and the tasks.
 # Planning Tasks
 
 ## Overview
-Review the `tasks.md` created by `/craft-propose` to ensure each task is small, verifiable,
+Review the `tasks.md` created by `openspec-propose` to ensure each task is small, verifiable,
 TDD-ordered, and directly traceable to a requirement. This is a validation step, not a
-re-creation step — `/craft-propose` already created the file.
+re-creation step — `openspec-propose` already created the file.
 
-**REQUIRED BACKGROUND:** `/craft-propose` must have completed and `openspec validate` must pass.
+**REQUIRED BACKGROUND:** `openspec-propose` must have completed and `openspec validate` must pass.
 
 ## Step 1 — Get the current task list
 ```bash
@@ -43,9 +43,9 @@ Show the refined list to the user briefly:
 > "Here's the task breakdown — N tasks across M groups. Does this look right before we start?"
 
 ## Gate
-`openspec validate` passes. User has seen the task list. Then invoke `/craft-apply`.
+`openspec validate` passes. User has seen the task list. Then invoke `openspec-apply-change`.
 
 ## Related skills
-- **REQUIRED before this skill:** `/craft-propose`, `writing-requirements`
-- **Artifact creation:** `/craft-propose` (creates tasks.md from CLI template)
-- **After this skill:** `/craft-apply` + `implementing-with-tdd`
+- **REQUIRED before this skill:** `openspec-propose`, `writing-requirements`
+- **Artifact creation:** `openspec-propose` (creates tasks.md from CLI template)
+- **After this skill:** `openspec-apply-change` + `implementing-with-tdd`

@@ -1,12 +1,12 @@
 ---
 name: implementing-with-tdd
-description: Use when implementing tasks from an OpenSpec tasks.md — writing each task test-first (RED-GREEN-REFACTOR) as /craft-apply drives the task list. Use for every code change, not just new features.
+description: Use when implementing tasks from an OpenSpec tasks.md — writing each task test-first (RED-GREEN-REFACTOR) as openspec-apply-change drives the task list. Use for every code change, not just new features.
 ---
 
 # Implementing with TDD
 
 ## Overview
-Implement each task from `tasks.md` test-first using `/craft-apply` to drive
+Implement each task from `tasks.md` test-first using `openspec-apply-change` to drive
 the loop. TDD is the discipline applied INSIDE each task the apply skill walks through.
 
 **REQUIRED BACKGROUND:** You MUST understand `superpowers:test-driven-development` before
@@ -19,8 +19,8 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 Wrote code before the test? Delete it. Start over with the test.
 No exceptions — not for "obvious" changes, not "I'll add it after."
 
-## How to use with /craft-apply
-`/craft-apply` drives the task loop (selecting change, reading context files,
+## How to use with openspec-apply-change
+`openspec-apply-change` drives the task loop (selecting change, reading context files,
 showing progress, pausing on blockers). For EACH task it presents, apply TDD:
 
 **RED** — write the smallest test that expresses the task's EARS scenario (GIVEN/WHEN/THEN).
@@ -30,7 +30,7 @@ Run it. Watch it fail for the right reason. A test that passes immediately = bro
 
 **REFACTOR** — clean up while keeping tests green. Run suite.
 
-**CHECK OFF** — flip `- [ ]` → `- [x]` in `tasks.md`. `/craft-apply` does this.
+**CHECK OFF** — flip `- [ ]` → `- [x]` in `tasks.md`. `openspec-apply-change` does this.
 
 Use **TodoWrite** to track your progress through the task list alongside openspec.
 
@@ -65,7 +65,7 @@ has been applied with real command output shown.
 
 ## Related skills
 - **REQUIRED background:** `superpowers:test-driven-development`
-- **Task driver:** `/craft-apply`
+- **Task driver:** `openspec-apply-change`
 - **Verification:** `superpowers:verification-before-completion`
 - **Bugs during implementation:** `superpowers:systematic-debugging`
 - **Context isolation:** dispatch `codebase-explorer` agent for deep exploration

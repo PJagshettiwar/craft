@@ -90,11 +90,8 @@ Prompt options:
 - If changes needed: "Sync now (recommended)" or "Archive without syncing"
 - If already synced: "Archive now", "Sync anyway", or "Cancel"
 
-If user chooses sync, dispatch a general-purpose subagent to merge each delta spec into
-its corresponding main spec at `openspec/specs/<capability>/spec.md`:
-> "Merge delta specs for change '<name>' into the main specs. Delta spec analysis: <summary>.
-> For each delta spec, read the delta, read the corresponding main spec, merge the changes,
-> and write the updated main spec."
+If user chooses sync, dispatch a general-purpose subagent:
+> "Use the Skill tool to invoke openspec-sync-specs for change '<name>'. Delta spec analysis: <summary>"
 
 Proceed to archive regardless of the sync choice.
 
