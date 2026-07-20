@@ -16,8 +16,8 @@ agent, or model manually.
 /craft-explore    →   /craft-propose   →   /craft-apply
   (fuzzy idea?)         (build spec)         (TDD impl)
 
-/craft-review     →   /craft-archive   →   /craft-pr
-  (spec + quality)      (verify + move)      (PR + survey)
+/craft-review-spec →  /craft-review     →   /craft-archive   →   /craft-pr
+  (spec vs code)        (code vs spec)        (verify + move)      (PR + survey)
 
                   or just:
 
@@ -34,6 +34,7 @@ agent, or model manually.
 | `/craft-explore` | Fuzzy problem? Think it through first. Explore ideas, investigate code, compare options. No code written. |
 | `/craft-propose` | Create OpenSpec artifacts (proposal + specs + design + tasks) in one step. |
 | `/craft-apply` | Implement tasks test-first. RED → GREEN → REFACTOR per task. Iron Law enforced. |
+| `/craft-review-spec` | Review specs against the codebase BEFORE implementation — find edge cases, missing scenarios, infeasible assumptions. Inverse of `/craft-review`. |
 | `/craft-review` | Review implementation — spec compliance, code quality, security, definition-of-done gate. |
 | `/craft-archive` | Verify review passed, assess delta spec sync, then archive the change. |
 | `/craft-pr` | Create a PR from the project template + collect a Claude Code experience survey → Jira. |
@@ -91,12 +92,13 @@ Or drive phases manually:
 
 ```
 craft/
-├── commands/          Slash commands (8 total)
+├── commands/          Slash commands (9 total)
 │   ├── craft-init.md
 │   ├── craft-sdlc.md
 │   ├── craft-explore.md
 │   ├── craft-propose.md
 │   ├── craft-apply.md
+│   ├── craft-review-spec.md
 │   ├── craft-review.md
 │   ├── craft-archive.md
 │   └── craft-pr.md
@@ -129,7 +131,7 @@ craft/
 
 ## Design principles
 
-**Less, but effective** — eight commands; you never pick a skill, agent, or model.
+**Less, but effective** — nine commands; you never pick a skill, agent, or model.
 
 **Superpowers discipline baked in** — every command carries HARD-GATEs (no code without
 a failing test, no "done" without real command output), AskUserQuestion one-at-a-time
