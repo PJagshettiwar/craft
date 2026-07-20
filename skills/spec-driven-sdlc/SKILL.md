@@ -83,8 +83,13 @@ Still: if a "simple" fix reveals unexpected complexity, restart from Phase 1.
 ## Related skills
 - **REQUIRED Phase 1:** `superpowers:brainstorming`
 - **REQUIRED Phase 2:** `openspec-propose`
+- **Phase 2 depth:** `superpowers:writing-plans` (plan structure, file mapping, DRY/YAGNI/TDD)
 - **REQUIRED Phase 3:** `openspec-apply-change`, `implementing-with-tdd`
+- **Phase 3 parallelism:** `superpowers:subagent-driven-development` (one subagent per independent task)
 - **REQUIRED Phase 4:** `reviewing-and-verifying`, `superpowers:verification-before-completion`
+- **Phase 4 review:** `superpowers:requesting-code-review`, `superpowers:receiving-code-review`
+- **Phase 4 branch:** `superpowers:finishing-a-development-branch`
 - **REQUIRED Phase 5:** `openspec-archive-change`
 - **For bugs found:** `superpowers:systematic-debugging`
+- **For parallel tasks:** `superpowers:dispatching-parallel-agents`
 - **Context isolation:** dispatch `codebase-explorer` agent for repo exploration

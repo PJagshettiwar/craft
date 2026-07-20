@@ -50,6 +50,15 @@ Reasoning-heavy work (requirements, design, review, security, validation) → st
 Build/test/debug → balanced model. Docs/formatting → fast model. Agents declare their own model.
 
 ## Skills available
+
+**Craft pipeline skills** (auto-activate by description — you do not name them):
 `spec-driven-sdlc` (entry), `writing-requirements`, `designing-architecture`, `planning-tasks`,
-`implementing-with-tdd`, `reviewing-and-verifying`. They auto-activate by description — you do not
-need to name them.
+`implementing-with-tdd`, `reviewing-and-verifying`.
+
+**Superpowers skills** (referenced by craft skills at specific gates):
+`superpowers:brainstorming`, `superpowers:test-driven-development`,
+`superpowers:verification-before-completion`, `superpowers:systematic-debugging`,
+`superpowers:writing-plans`, `superpowers:executing-plans`,
+`superpowers:subagent-driven-development`, `superpowers:dispatching-parallel-agents`,
+`superpowers:requesting-code-review`,
+`superpowers:receiving-code-review`, `superpowers:finishing-a-development-branch`.

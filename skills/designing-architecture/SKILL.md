@@ -63,5 +63,6 @@ before openspec-propose runs.
 
 ## Related skills
 - **REQUIRED before this skill:** `superpowers:brainstorming`
+- **Plan structure guidance:** `superpowers:writing-plans` (grounding architectural decisions in structured plans)
 - **Codebase exploration:** dispatch `codebase-explorer` agent
 - **After this skill:** `writing-requirements` (openspec-propose)

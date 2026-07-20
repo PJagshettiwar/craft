@@ -19,6 +19,12 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 Wrote code before the test? Delete it. Start over with the test.
 No exceptions — not for "obvious" changes, not "I'll add it after."
 
+## Execution strategy
+When the task list has independent groups (flagged during planning), prefer
+`superpowers:subagent-driven-development` — dispatch one fresh subagent per independent task
+with precisely crafted context. This keeps each agent focused and preserves the coordinator's
+context. For tightly coupled sequential tasks, execute them inline.
+
 ## How to use with openspec-apply-change
 `openspec-apply-change` drives the task loop (selecting change, reading context files,
 showing progress, pausing on blockers). For EACH task it presents, apply TDD:
@@ -66,6 +72,8 @@ has been applied with real command output shown.
 ## Related skills
 - **REQUIRED background:** `superpowers:test-driven-development`
 - **Task driver:** `openspec-apply-change`
+- **Parallel tasks:** `superpowers:subagent-driven-development` (one subagent per independent task)
+- **Parallel dispatch:** `superpowers:dispatching-parallel-agents` (when 2+ tasks have no shared state)
 - **Verification:** `superpowers:verification-before-completion`
 - **Bugs during implementation:** `superpowers:systematic-debugging`
 - **Context isolation:** dispatch `codebase-explorer` agent for deep exploration

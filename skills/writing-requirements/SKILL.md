@@ -69,4 +69,5 @@ Wait for confirmation.
 ## Related skills
 - **REQUIRED before this skill:** `superpowers:brainstorming`
 - **Artifact creation:** `openspec-propose`
+- **Plan structure guidance:** `superpowers:writing-plans` (bite-sized tasks, file mapping, DRY/YAGNI/TDD principles)
 - **After this skill:** `openspec-apply-change` + `implementing-with-tdd`

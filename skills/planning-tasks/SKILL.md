@@ -32,6 +32,10 @@ Order: test task → implementation task → verify task.
 for any orphan task: "Task N doesn't trace to a requirement — should it be removed or is there
 a requirement I missed?"
 
+**Parallelizable** — mark groups of tasks that have no shared state or sequential dependency.
+When 2+ tasks are independent, note them as parallelizable so `superpowers:dispatching-parallel-agents`
+or `superpowers:subagent-driven-development` can dispatch them concurrently during implementation.
+
 **Includes verification** — final tasks must include: run full test suite, run lint/type-check,
 `openspec validate`.
 
@@ -48,4 +52,6 @@ Show the refined list to the user briefly:
 ## Related skills
 - **REQUIRED before this skill:** `openspec-propose`, `writing-requirements`
 - **Artifact creation:** `openspec-propose` (creates tasks.md from CLI template)
+- **Plan structure guidance:** `superpowers:writing-plans` (bite-sized tasks, file mapping, DRY/YAGNI/TDD principles)
+- **Parallel task detection:** `superpowers:dispatching-parallel-agents` (when 2+ tasks are independent, flag them as parallelizable)
 - **After this skill:** `openspec-apply-change` + `implementing-with-tdd`

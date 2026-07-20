@@ -27,6 +27,8 @@ Dispatch the `post-impl-code-reviewer` agent (read-only, strong model, context-i
 It will verify each EARS scenario maps to a real, passing assertion and every task is checked.
 
 If post-impl-code-reviewer returns REQUEST CHANGES:
+- Apply `superpowers:receiving-code-review` — evaluate each item technically before implementing.
+  Verify against the codebase reality; push back on suggestions that don't apply.
 - Identify which requirement is unmet.
 - Return to `implementing-with-tdd` and fix it.
 - ONE correction loop only — then re-review. If still failing, report to the user.
@@ -48,9 +50,14 @@ Run each of these and show the real output before claiming the gate is passed:
 - Lint/type-check: `<lint command from PROJECT.md>`
 - `openspec validate --strict`
 
-## Stage 4 — Archive
-When post-impl-code-reviewer is APPROVE(-WITH-NITS) and all commands pass, invoke
-`openspec-archive-change`. It will:
+## Stage 4 — Finish the branch
+When post-impl-code-reviewer is APPROVE(-WITH-NITS) and all commands pass, apply
+`superpowers:finishing-a-development-branch` to decide next steps: merge, PR, or cleanup.
+Use `superpowers:requesting-code-review` if an additional human or agent review is warranted
+before merging.
+
+## Stage 5 — Archive
+When the branch is finalized, invoke `openspec-archive-change`. It will:
 1. Check artifact + task completion (prompt if anything incomplete).
 2. Show delta spec sync assessment.
 3. Run `mv "<changeRoot>" "<changesDir>/archive/YYYY-MM-DD-<name>"`.
@@ -68,6 +75,9 @@ All tasks complete ✓
 
 ## Related skills
 - **REQUIRED before claiming done:** `superpowers:verification-before-completion`
+- **Handling review feedback:** `superpowers:receiving-code-review` (technical evaluation, not blind implementation)
+- **Requesting additional review:** `superpowers:requesting-code-review` (dispatch reviewer subagent with crafted context)
+- **Branch completion:** `superpowers:finishing-a-development-branch` (verify tests → present options → execute)
 - **For any bugs found:** `superpowers:systematic-debugging`
 - **Code review execution:** dispatch `post-impl-code-reviewer` agent
 - **Archive execution:** `openspec-archive-change`

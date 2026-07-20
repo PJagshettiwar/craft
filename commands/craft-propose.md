@@ -128,6 +128,7 @@ Next: /craft-apply <name>
 
 - Create ALL artifacts required by `applyRequires` before finishing
 - Always read dependency artifacts before creating a new one
+- The schema defines what each artifact should contain — follow it; do not invent your own structure
 - `context` and `rules` from instructions are YOUR constraints — never copy them into output files
 - If a change with that name already exists, use **AskUserQuestion**: continue it or create a new one?
 - Verify each artifact file exists after writing before proceeding

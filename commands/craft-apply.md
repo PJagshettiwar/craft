@@ -45,7 +45,9 @@ Parse:
 - Which artifact contains the tasks (typically `tasks` — confirm from status)
 
 **Workspace guard:** If `actionContext.mode: "workspace-planning"` and `allowedEditRoots` is empty,
-explain the limitation and STOP before editing any files.
+explain that full workspace apply is not supported. Treat linked repos and folders as read-only
+context, ask the user to select an affected area through an explicit implementation workflow,
+and STOP before editing any files.
 
 **If `state: "blocked"` (missing artifacts):** show message, suggest `/craft-propose`.
 **If `state: "all_done"`:** congratulate, suggest `/craft-review`.
@@ -157,6 +159,14 @@ Do NOT claim implementation complete or move to review until:
 </HARD-GATE>
 
 ---
+
+## Fluid workflow
+
+This command supports interleaved usage — it is not phase-locked:
+- **Can be invoked anytime:** before all artifacts are done (if tasks exist), after partial
+  implementation, or interleaved with other actions like `/craft-explore` or `/craft-propose`.
+- **Allows artifact updates:** if implementation reveals design issues, suggest updating the
+  relevant artifact (design.md, specs, tasks.md) — then continue. Work fluidly.
 
 ## Guardrails
 

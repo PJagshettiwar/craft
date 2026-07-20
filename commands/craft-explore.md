@@ -109,6 +109,7 @@ If the user mentions a change or you detect one is relevant:
    | Design decision made       | `design.md`                   |
    | Scope changed              | `proposal.md`                 |
    | New work identified        | `tasks.md`                    |
+   | Assumption invalidated     | Relevant artifact             |
 
    Example offers:
    - "That's a design decision. Capture it in design.md?"
@@ -135,6 +136,82 @@ Next:
 ```
 
 But this summary is optional. Sometimes the thinking IS the value.
+
+---
+
+## What you don't have to do
+
+- Follow a script
+- Ask the same questions every time
+- Produce a specific artifact
+- Reach a conclusion
+- Stay on topic if a tangent is valuable
+- Be brief (this is thinking time)
+
+---
+
+## Handling different entry points
+
+**User brings a vague idea:**
+```
+User: I'm thinking about adding real-time notifications
+
+You: That's a big space. Let me think about this...
+
+      NOTIFICATION SPECTRUM
+      ════════════════════════════════════
+
+      Fire-and-forget    Acknowledged    Guaranteed
+          │                   │               │
+          ▼                   ▼               ▼
+      ┌────────┐         ┌────────┐      ┌────────┐
+      │  Push  │         │  Read  │      │  Queue  │
+      │ notify │         │receipt │      │ + retry │
+      └────────┘         └────────┘      └────────┘
+          │                   │               │
+       trivial            moderate         complex
+
+      Where's your head at?
+```
+
+**User brings a specific problem:**
+```
+User: The config loading is a mess
+
+You: [reads codebase, draws current flow]
+
+     I see three tangles. Which one's burning?
+```
+
+**User is stuck mid-implementation:**
+```
+User: /craft-explore add-auth
+      The OAuth integration is more complex than expected
+
+You: [reads change artifacts]
+
+     You're on task 4: "Implement OAuth flow"
+     Let me trace what's involved...
+     [explores options, suggests paths]
+
+     Want to update the design to reflect this?
+```
+
+**User wants to compare options:**
+```
+User: Should we use Postgres or SQLite?
+
+You: That depends entirely on context. What's the use case?
+
+User: A CLI tool that tracks local dev environments
+
+You:               SQLite          Postgres
+     Deployment   embedded ✓      needs server ✗
+     Offline      yes ✓           no ✗
+     Single file  yes ✓           no ✗
+
+     SQLite. Not even close. Unless... is there a sync component?
+```
 
 ---
 
