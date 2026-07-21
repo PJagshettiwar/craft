@@ -1,13 +1,15 @@
 ---
-description: Learn this project and configure the craft SDLC toolkit for Claude, Cursor, and Copilot. Writes PROJECT.md, wires cross-IDE files, checks for Superpowers, and walks the user through what to do next.
-argument-hint: "[optional: notes about the project]"
+description: Learn this project and configure the craft SDLC toolkit. Validates or creates CLAUDE.md as the single source of truth, wires cross-IDE files, and checks for Superpowers and OpenSpec.
+argument-hint: "[optional: notes about the project, or 'just create it' to skip interview]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 ---
 
 # /craft-init — set up and onboard
 
-Set up the `craft` spec-driven SDLC toolkit in this repo, then walk the user through how to use
-it. Be conversational and educational in the final output — init is the start of a relationship,
+Set up the `craft` spec-driven SDLC toolkit in this repo. `CLAUDE.md` is the single source of
+truth for project context — craft reads it, enriches it, and never creates a separate file.
+
+Be conversational and educational in the final output — init is the start of a relationship,
 not just a configuration script.
 
 ---
@@ -28,34 +30,22 @@ Continue either way.
 
 ## Step 2 — Learn the project
 Dispatch the `codebase-explorer` agent to profile the repo (keeps exploration out of main context).
-Ask it for: language(s) + version, build/test/lint commands, test framework, directory layout,
-DI/framework patterns, code style, and any existing agent conventions (CLAUDE.md, AGENTS.md,
-.cursor/rules, openspec/). It must quote config files as evidence.
+Ask it for:
+- Language(s) + version, build/test/lint commands (including single-test command), test framework
+- Directory layout, DI/framework patterns, code style
+- Existing agent conventions (CLAUDE.md, AGENTS.md, .cursor/rules, .cursorrules,
+  .github/copilot-instructions.md, openspec/)
+- **Do-NOT candidates**: files with `@Generated`, `auto-generated`, or `DO NOT EDIT` headers;
+  migration directories (`db/migrations/`, `flyway/`, `liquibase/`, `alembic/`);
+  lock files (`package-lock.json`, `Cargo.lock`, `yarn.lock`);
+  CI/CD configs (`.github/workflows/`, `Jenkinsfile`, `.gitlab-ci.yml`);
+  infra-as-code (`terraform/`, `.cloudos/`, `cdk/`);
+  vendor/third-party directories (`vendor/`, `node_modules/`, `third_party/`)
+
+It must quote config files as evidence.
 Incorporate any notes the user passed in `$ARGUMENTS`.
 
-## Step 3 — Write `PROJECT.md`
-Write `PROJECT.md` at the repo root from the explorer's findings. This is the single "flavor"
-file every skill and agent reads — do NOT edit individual skills.
-
-```markdown
-# PROJECT.md — project profile (read by the craft SDLC toolkit)
-## Stack
-<languages, versions, key frameworks>
-## Commands
-- Build: <cmd>
-- Test: <cmd>   (single test: <cmd>)
-- Lint / type-check: <cmd>
-- OpenSpec: openspec validate | openspec archive <name>
-## Layout
-<top-level modules/dirs and what they hold>
-## Conventions
-<indent, naming, line length, error handling, logging, DI, test naming>
-## Notes
-<anything unusual an implementer must know>
-```
-Only include facts the explorer verified. Mark anything uncertain; ask the user.
-
-## Step 4 — Check OpenSpec
+## Step 3 — Check OpenSpec
 If `openspec/` is absent, tell the user:
 > OpenSpec is not initialised. Install and init with:
 > ```
@@ -64,21 +54,117 @@ If `openspec/` is absent, tell the user:
 > ```
 > Then re-run `/craft-init`. (Don't run global installs yourself — ask first.)
 
-## Step 5 — Wire cross-IDE
-Ask which tools to wire (Claude / Cursor / Copilot / all):
-- **Claude Code:** add `@AGENTS.md` to `CLAUDE.md` (create if missing) so Claude reads the
-  always-on pipeline rules. Skills/agents/commands are already symlinked globally.
-- **Cursor:** `AGENTS.md` is read natively — no changes needed.
-- **Copilot:** `AGENTS.md` is read natively. Optionally create
-  `.github/copilot-instructions.md` as a pointer. Ask before creating.
-Use symlinks, not copies. Idempotent — safe to re-run.
+## Step 4 — Handle CLAUDE.md
+
+Branch based on whether `CLAUDE.md` exists at the repo root.
+
+### Path A — CLAUDE.md exists: Validate and enrich
+
+1. Read the existing `CLAUDE.md`.
+
+2. **Validate craft essentials.** Semantically check (not by section name — by content) whether
+   CLAUDE.md contains:
+   - Build command
+   - Test command (full suite)
+   - Test command (single test)
+   - Lint / type-check command
+   - OpenSpec commands (`openspec validate`, `openspec archive`)
+   - `@AGENTS.md` import
+
+3. **Check for Do-NOT section.** If no "Do NOT" / "Do not" / "Off-limits" section exists,
+   propose one using the Do-NOT candidates detected by the explorer.
+
+4. **Report findings:**
+   - If everything is present: "Your CLAUDE.md has everything craft needs. No changes required."
+   - If items are missing: list each missing item with:
+     - **What's missing** (e.g., "Single-test command")
+     - **Why craft needs it** (e.g., "The TDD skill runs individual tests during RED-GREEN cycles")
+     - **Example content** (e.g., `mvn test -Dtest=ClassName#methodName`)
+
+5. **Ask user:** "Want me to add all of these, pick specific ones, or skip?"
+
+6. **For each approved item:** show the exact diff (what will be added and where), then apply
+   only after user confirms.
+
+7. **NEVER silently modify an existing CLAUDE.md.** Every change requires explicit approval
+   with reasoning shown.
+
+### Path B — CLAUDE.md absent: Generate
+
+Check if the user said "just create it" (in `$ARGUMENTS` or conversation).
+
+**If "just create it":** auto-generate `CLAUDE.md` from explorer findings without interview.
+
+**Otherwise:** interview the user ONE question at a time:
+1. "What does this project do and who uses it? (2-3 sentences for the overview)"
+2. Present the detected Do-NOT candidates: "I found these files/directories that Claude should
+   probably not modify. Which ones should I include?" Show each candidate with a brief
+   explanation (e.g., "`.github/workflows/` — CI/CD pipelines, changes could break deployments").
+3. "Any conventions or gotchas that differ from the language defaults?"
+
+**Generated CLAUDE.md structure** (under 200 lines, directives not suggestions):
+
+```markdown
+# CLAUDE.md
+
+<2-3 sentence project overview>
+
+@AGENTS.md
+
+## Commands
+
+- Build: `<detected>`
+- Test: `<detected>`
+- Test single: `<detected>`
+- Lint: `<detected>`
+- OpenSpec: `openspec validate` | `openspec archive <name>`
+
+## Conventions
+
+<only rules that differ from language defaults — from explorer + user input>
+
+## Do NOT
+
+<approved Do-NOT candidates, as directives — e.g.:>
+- Do not modify files in `src/generated/` — auto-generated code
+- Do not edit migration files in `db/migrations/` — managed by migration tool
+- Do not modify CI workflows in `.github/workflows/` without asking
+```
+
+Only include facts the explorer verified. Mark anything uncertain; ask the user.
+
+## Step 5 — Migrate legacy PROJECT.md (if present)
+
+If `PROJECT.md` exists at the repo root:
+
+1. Read it and compare against `CLAUDE.md`.
+2. If it contains unique content not in `CLAUDE.md`, show it as proposed additions (same
+   diff-with-reasoning format as Path A).
+3. If all content is redundant, report: "PROJECT.md content is already covered by CLAUDE.md."
+4. Suggest deleting `PROJECT.md` and removing its `.gitignore` entry (if present).
+
+## Step 6 — Cross-IDE reconciliation
+
+Detect cross-IDE config files:
+- `.cursorrules` or `.cursor/rules/`
+- `.github/copilot-instructions.md`
+
+For each file found:
+1. Compare its content against `CLAUDE.md` (the canonical source).
+2. Flag any drift: conventions, commands, or rules that differ.
+3. Suggest alignment: "Your `.cursorrules` has `X` but CLAUDE.md says `Y`. Consider updating
+   `.cursorrules` to match."
+
+**Advisory only** — do NOT modify Cursor or Copilot files automatically.
+
+If no cross-IDE configs are found, skip silently.
 
 ---
 
-## Step 6 — Welcome message (always show this last, in full)
+## Step 7 — Welcome message (always show this last, in full)
 
 After completing the above, output the following welcome block. Adapt the examples to match
-what the explorer found (use the real stack, real commands, real module names from PROJECT.md).
+what the explorer found (use the real stack, real commands, real module names).
 
 ---
 
@@ -89,9 +175,10 @@ what the explorer found (use the real stack, real commands, real module names fr
 ╚══════════════════════════════════════════════════════════════╝
 
 ── What just happened ───────────────────────────────────────────
-✓ PROJECT.md written  — your project's stack, commands, and
-  conventions. Every skill reads this automatically.
-✓ Cross-IDE wired     — Claude / Cursor / Copilot are configured.
+✓ CLAUDE.md validated  — your project's commands, conventions,
+  and Do-NOT rules. Every skill reads this automatically.
+  (or: ✓ CLAUDE.md created — ... if newly generated)
+✓ Cross-IDE checked   — Cursor / Copilot configs compared.
 ✓ Superpowers: <installed ✓ | not installed — see above>
 
 ── How craft works ──────────────────────────────────────────────
@@ -121,7 +208,7 @@ You never pick a model, skill, or agent manually.
   /craft-pr        Create a PR from the template + collect a
                    Claude Code experience survey → Jira.
 
-  /craft-init      Re-run anytime to refresh PROJECT.md or
+  /craft-init      Re-run anytime to refresh CLAUDE.md or
                    wire a new IDE.
 
 ── Examples (try one of these) ─────────────────────────────────
@@ -167,10 +254,11 @@ craft will NOT jump to code. It will:
     craft will pause and ask what to do.
 
   • Re-run /craft-init after adding a new module or changing
-    your build setup — it refreshes PROJECT.md in place.
+    your build setup — it refreshes CLAUDE.md in place.
 
-── Files craft created ──────────────────────────────────────────
-  PROJECT.md          project profile (edit freely)
+── Files craft uses ────────────────────────────────────────────
+  CLAUDE.md           project context — commands, conventions,
+                      Do-NOT rules (yours to edit freely)
   AGENTS.md           always-on pipeline rules for all IDEs
   openspec/           spec artifacts live here (after first run)
 

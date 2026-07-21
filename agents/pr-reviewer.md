@@ -14,7 +14,7 @@ The caller provides:
 - **PR metadata:** number, title, description, URL, head branch, base branch
 - **Changed files:** list of files modified in the PR
 - **Diff:** the output of `git diff <base>..<head>`
-- **Convention files:** paths to CLAUDE.md, AGENTS.md, PROJECT.md (if they exist in the repo)
+- **Convention files:** paths to CLAUDE.md, AGENTS.md (if they exist in the repo)
 - **OpenSpec change path:** path to the OpenSpec change directory (if one exists for this PR)
 
 Read ALL provided convention files and the diff before starting review.
@@ -65,9 +65,8 @@ Skip this stage. Include in output: "No OpenSpec artifacts found. Spec complianc
 
 Review all changed files against project conventions:
 - **Read CLAUDE.md** (if provided) for project-specific rules: naming, imports, error handling,
-  code style, patterns to follow or avoid.
+  code style, patterns to follow or avoid, stack, commands, layout, and conventions.
 - **Read AGENTS.md** (if provided) for accuracy and grounding rules.
-- **Read PROJECT.md** (if provided) for stack, commands, layout, and conventions.
 
 Check for:
 - Convention violations (naming, imports, error handling, code style per CLAUDE.md)

@@ -102,7 +102,6 @@ Follow the `superpowers:using-git-worktrees` skill:
 ```bash
 ls "$WORKTREE_PATH/CLAUDE.md" 2>/dev/null
 ls "$WORKTREE_PATH/AGENTS.md" 2>/dev/null
-ls "$WORKTREE_PATH/PROJECT.md" 2>/dev/null
 ```
 Store paths to any that exist.
 
@@ -138,7 +137,7 @@ Dispatch the `pr-reviewer` agent with all collected context:
 > Changed files: `<list>`
 >
 > Convention files (read these for project rules):
-> - `<paths to CLAUDE.md, AGENTS.md, PROJECT.md if they exist>`
+> - `<paths to CLAUDE.md, AGENTS.md if they exist>`
 >
 > OpenSpec change path: `<OPENSPEC_CHANGE_PATH or "none">`
 >

@@ -42,7 +42,7 @@ agent, or model manually.
 | `/craft-archive` | Verify review passed, assess delta spec sync, then archive the change. |
 | `/craft-pr` | Create a PR from the project template + collect a Claude Code experience survey → Jira. |
 | `/craft-pr-review` | **Standalone.** Review any PR in an isolated worktree — quality, security, defense-in-depth. Posts inline comments. |
-| `/craft-init` | First-time setup. Re-run anytime to refresh `PROJECT.md` or wire a new IDE. |
+| `/craft-init` | First-time setup. Re-run anytime to refresh `CLAUDE.md` or wire a new IDE. |
 
 ---
 
@@ -68,8 +68,8 @@ Copy the `craft/` folder into your repo, then in Claude Code:
 /craft-init
 ```
 
-This profiles your project, writes `PROJECT.md` (the "flavor" every skill reads automatically),
-and wires Claude / Cursor / Copilot.
+This profiles your project, validates or creates `CLAUDE.md` (the single source of truth every
+skill reads automatically), and wires Claude / Cursor / Copilot.
 
 **Step 3 — Build something**
 
@@ -119,8 +119,7 @@ craft/
 │   ├── pre-impl-spec-reviewer.md  Reviews specs vs codebase before implementation (read-only, Opus)
 │   ├── post-impl-code-reviewer.md Reviews code vs specs after implementation (read-only, Opus)
 │   └── pr-reviewer.md             Reviews any PR in isolation (read-only, Opus)
-├── AGENTS.md          Always-on pipeline rules — read by all IDEs natively
-└── PROJECT.md         Written by /craft-init — project flavor (stack, commands, conventions)
+└── AGENTS.md          Always-on pipeline rules — read by all IDEs natively
 ```
 
 ---

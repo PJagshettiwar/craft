@@ -6,7 +6,7 @@ this repo. Cursor and Copilot read this file natively; Claude Code reads it via 
 
 ## How to work here
 When given a problem statement, follow the **spec-driven SDLC pipeline**. Do not jump straight to
-code. Read `PROJECT.md` (written by `/init`) for this project's build/test commands, style, and
+code. Read `CLAUDE.md` (written by `/init`) for this project's build/test commands, style, and
 module layout before acting.
 
 ### Pipeline
@@ -32,7 +32,7 @@ folder is the shared source of truth.
 Map to OpenSpec scenarios: precondition→GIVEN, trigger→WHEN, response→THEN.
 
 ## Accuracy rules (apply every turn)
-1. **Ground in provided context.** Use the repo, artifacts, and `PROJECT.md`; do not invent APIs,
+1. **Ground in provided context.** Use the repo, artifacts, and `CLAUDE.md`; do not invent APIs,
    files, or facts. If unsure whether something exists, check (grep/read) before relying on it.
 2. **Quote before answering** from code/docs on any claim about existing behavior.
 3. **Say "I don't have enough information"** rather than guess. A correct "I don't know" beats a

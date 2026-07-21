@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 # /craft-apply — implement test-first
 
-Read `PROJECT.md` for exact build/test/lint commands and code conventions before starting.
+Read `CLAUDE.md` for exact build/test/lint commands and code conventions before starting.
 
 **REQUIRED BACKGROUND:** You MUST understand `superpowers:test-driven-development` before
 implementing any task. That skill defines the RED-GREEN-REFACTOR cycle and its Iron Law.

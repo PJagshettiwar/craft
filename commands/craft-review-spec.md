@@ -30,7 +30,7 @@ openspec status --change "<name>" --json
 ```
 
 Read ALL artifacts: `proposal.md`, `design.md`, all `specs/**/spec.md`, `tasks.md`.
-Read `PROJECT.md` for project conventions.
+Read `CLAUDE.md` for project conventions.
 
 ## Step 3 — Dispatch the drilldown reviewer
 

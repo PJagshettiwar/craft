@@ -14,7 +14,7 @@ not on prompts.
 **If no problem statement was given** (empty `$ARGUMENTS`), use **AskUserQuestion** first:
 > "What do you want to build or fix? Describe the problem and what success looks like."
 
-**If a problem statement was given**, read `PROJECT.md` (run `/init` first if missing),
+**If a problem statement was given**, read `CLAUDE.md` (run `/init` first if missing),
 then immediately begin `superpowers:brainstorming` — ask ONE clarifying question at a time
 to understand intent, constraints, and success criteria before proposing any design or code.
 
