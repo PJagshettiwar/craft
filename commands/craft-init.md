@@ -14,7 +14,9 @@ not just a configuration script.
 
 ---
 
-## Step 1 — Check Superpowers
+## Step 1 — Check prerequisites
+
+### Superpowers
 Look for `superpowers` in `~/.claude/plugins/installed_plugins.json` or
 `~/.claude/plugins/cache/*/superpowers`. If absent, tell the user:
 
@@ -27,6 +29,26 @@ Look for `superpowers` in `~/.claude/plugins/installed_plugins.json` or
 > Continuing without it — but install it for the best experience.
 
 Continue either way.
+
+### OpenSpec
+Check whether the `openspec` CLI is available (`which openspec` or `openspec --version`).
+Also check whether the `openspec/` directory exists at the repo root.
+
+- **CLI missing:** tell the user:
+  > **OpenSpec CLI not found.** Install and initialise with:
+  > ```
+  > npm i -g @fission-ai/openspec@latest
+  > openspec init
+  > ```
+  > (Don't run global installs yourself — ask first.)
+
+- **CLI present but `openspec/` directory absent:** tell the user:
+  > **OpenSpec not initialised in this repo.** Run `openspec init` to create the `openspec/`
+  > directory, then re-run `/craft-init`.
+
+- **Both present:** continue silently.
+
+Continue either way — but record the result for the welcome message.
 
 ## Step 2 — Learn the project
 Dispatch the `codebase-explorer` agent to profile the repo (keeps exploration out of main context).
@@ -45,16 +67,7 @@ Ask it for:
 It must quote config files as evidence.
 Incorporate any notes the user passed in `$ARGUMENTS`.
 
-## Step 3 — Check OpenSpec
-If `openspec/` is absent, tell the user:
-> OpenSpec is not initialised. Install and init with:
-> ```
-> npm i -g @fission-ai/openspec@latest
-> openspec init
-> ```
-> Then re-run `/craft-init`. (Don't run global installs yourself — ask first.)
-
-## Step 4 — Handle CLAUDE.md
+## Step 3 — Handle CLAUDE.md
 
 Branch based on whether `CLAUDE.md` exists at the repo root.
 
@@ -133,17 +146,7 @@ Check if the user said "just create it" (in `$ARGUMENTS` or conversation).
 
 Only include facts the explorer verified. Mark anything uncertain; ask the user.
 
-## Step 5 — Migrate legacy PROJECT.md (if present)
-
-If `PROJECT.md` exists at the repo root:
-
-1. Read it and compare against `CLAUDE.md`.
-2. If it contains unique content not in `CLAUDE.md`, show it as proposed additions (same
-   diff-with-reasoning format as Path A).
-3. If all content is redundant, report: "PROJECT.md content is already covered by CLAUDE.md."
-4. Suggest deleting `PROJECT.md` and removing its `.gitignore` entry (if present).
-
-## Step 6 — Cross-IDE reconciliation
+## Step 4 — Cross-IDE reconciliation
 
 Detect cross-IDE config files:
 - `.cursorrules` or `.cursor/rules/`
@@ -161,7 +164,7 @@ If no cross-IDE configs are found, skip silently.
 
 ---
 
-## Step 7 — Welcome message (always show this last, in full)
+## Step 5 — Welcome message (always show this last, in full)
 
 After completing the above, output the following welcome block. Adapt the examples to match
 what the explorer found (use the real stack, real commands, real module names).
@@ -180,6 +183,7 @@ what the explorer found (use the real stack, real commands, real module names).
   (or: ✓ CLAUDE.md created — ... if newly generated)
 ✓ Cross-IDE checked   — Cursor / Copilot configs compared.
 ✓ Superpowers: <installed ✓ | not installed — see above>
+✓ OpenSpec:     <installed ✓ | not installed — see above>
 
 ── How craft works ──────────────────────────────────────────────
 You describe a problem. craft asks questions, builds a spec,
