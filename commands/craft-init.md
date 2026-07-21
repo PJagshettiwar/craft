@@ -162,9 +162,35 @@ For each file found:
 
 If no cross-IDE configs are found, skip silently.
 
+## Step 5 — Install global symlinks
+
+Create symlinks in `~/.claude/` so craft commands, skills, and agents are available from
+any project — not just this repo. Each symlink points to the source file in this repo using
+an absolute path.
+
+1. **Commands:** For each `.md` file in this repo's `commands/` directory, create a symlink
+   at `~/.claude/commands/<filename>` → `<repo-root>/commands/<filename>`.
+
+2. **Skills:** Create `~/.claude/skills/craft/` if absent. For each subdirectory in this
+   repo's `skills/` directory, create a symlink at `~/.claude/skills/craft/<name>` →
+   `<repo-root>/skills/<name>`.
+
+3. **Agents:** Create `~/.claude/agents/` if absent. For each `.md` file in this repo's
+   `agents/` directory, create a symlink at `~/.claude/agents/<filename>` →
+   `<repo-root>/agents/<filename>`.
+
+Before creating each symlink:
+- If a **regular file** (not a symlink) exists at the target, back it up to `<target>.bak`
+  and warn the user.
+- If a **symlink** already exists and points to the correct target, skip it silently.
+- If a **symlink** exists but points elsewhere (stale or wrong repo), replace it.
+- If a **broken symlink** exists, remove and replace it.
+
+Report a summary: how many created, how many already correct, how many replaced.
+
 ---
 
-## Step 5 — Welcome message (always show this last, in full)
+## Step 6 — Welcome message (always show this last, in full)
 
 After completing the above, output the following welcome block. Adapt the examples to match
 what the explorer found (use the real stack, real commands, real module names).
@@ -182,6 +208,8 @@ what the explorer found (use the real stack, real commands, real module names).
   and Do-NOT rules. Every skill reads this automatically.
   (or: ✓ CLAUDE.md created — ... if newly generated)
 ✓ Cross-IDE checked   — Cursor / Copilot configs compared.
+✓ Global symlinks     — craft commands/skills/agents available
+  from any project via ~/.claude/
 ✓ Superpowers: <installed ✓ | not installed — see above>
 ✓ OpenSpec:     <installed ✓ | not installed — see above>
 
