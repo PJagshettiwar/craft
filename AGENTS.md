@@ -61,4 +61,8 @@ Build/test/debug → balanced model. Docs/formatting → fast model. Agents decl
 `superpowers:writing-plans`, `superpowers:executing-plans`,
 `superpowers:subagent-driven-development`, `superpowers:dispatching-parallel-agents`,
 `superpowers:requesting-code-review`,
-`superpowers:receiving-code-review`, `superpowers:finishing-a-development-branch`.
+`superpowers:receiving-code-review`, `superpowers:finishing-a-development-branch`,
+`superpowers:using-git-worktrees`.
+
+**Standalone commands** (independent of the pipeline):
+`/craft-pr-review` — review any PR in an isolated worktree using the `pr-reviewer` agent.
