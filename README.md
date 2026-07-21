@@ -119,7 +119,6 @@ craft/
 │   ├── pre-impl-spec-reviewer.md  Reviews specs vs codebase before implementation (read-only, Opus)
 │   ├── post-impl-code-reviewer.md Reviews code vs specs after implementation (read-only, Opus)
 │   └── pr-reviewer.md             Reviews any PR in isolation (read-only, Opus)
-└── AGENTS.md          Always-on pipeline rules — read by all IDEs natively
 ```
 
 ---
@@ -128,9 +127,9 @@ craft/
 
 | Tool | How craft works |
 |---|---|
-| **Claude Code** | Symlink `commands/` → `~/.claude/commands/`, `skills/` → `~/.claude/skills/`, `agents/` → `~/.claude/agents/`. `/craft-init` adds `@AGENTS.md` to `CLAUDE.md` (Claude doesn't read AGENTS.md natively). |
-| **Cursor** | Reads `AGENTS.md` and `SKILL.md` natively — no extra setup. |
-| **Copilot** | Reads `AGENTS.md` natively. `/craft-init` can add `.github/copilot-instructions.md` as a pointer. |
+| **Claude Code** | Symlink `commands/` → `~/.claude/commands/`, `skills/` → `~/.claude/skills/`, `agents/` → `~/.claude/agents/`. `/craft-init` validates `CLAUDE.md` as the single source of truth. |
+| **Cursor** | Reads `SKILL.md` natively — no extra setup. |
+| **Copilot** | `/craft-init` can add `.github/copilot-instructions.md` as a pointer. |
 
 ---
 
@@ -155,4 +154,3 @@ Delta specs merge to `openspec/specs/` on archive — the living spec stays curr
 - [OpenSpec](https://github.com/Fission-AI/OpenSpec) — change lifecycle CLI
 - [Superpowers](https://github.com/obra/superpowers) — HARD-GATEs, TDD, debugging discipline
 - [Agent Skills spec](https://agentskills.io/specification) — portable `SKILL.md` format
-- [AGENTS.md standard](https://agents.md/) — cross-tool always-on instructions

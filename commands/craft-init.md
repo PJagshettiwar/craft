@@ -82,7 +82,6 @@ Branch based on whether `CLAUDE.md` exists at the repo root.
    - Test command (single test)
    - Lint / type-check command
    - OpenSpec commands (`openspec validate`, `openspec archive`)
-   - `@AGENTS.md` import
 
 3. **Check for Do-NOT section.** If no "Do NOT" / "Do not" / "Off-limits" section exists,
    propose one using the Do-NOT candidates detected by the explorer.
@@ -121,8 +120,6 @@ Check if the user said "just create it" (in `$ARGUMENTS` or conversation).
 # CLAUDE.md
 
 <2-3 sentence project overview>
-
-@AGENTS.md
 
 ## Commands
 
@@ -291,7 +288,6 @@ craft will NOT jump to code. It will:
 ── Files craft uses ────────────────────────────────────────────
   CLAUDE.md           project context — commands, conventions,
                       Do-NOT rules (yours to edit freely)
-  AGENTS.md           always-on pipeline rules for all IDEs
   openspec/           spec artifacts live here (after first run)
 
 Ready. Run /craft-sdlc "<your problem>" to start.
