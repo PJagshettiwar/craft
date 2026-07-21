@@ -46,8 +46,8 @@ Required changes: <specific, ordered — empty if APPROVE>
 
 ## Stage 3 — Definition of done (apply superpowers:verification-before-completion)
 Run each of these and show the real output before claiming the gate is passed:
-- Full test suite: `<test command from PROJECT.md>`
-- Lint/type-check: `<lint command from PROJECT.md>`
+- Full test suite: `<test command from CLAUDE.md>`
+- Lint/type-check: `<lint command from CLAUDE.md>`
 - `openspec validate --strict`
 
 ## Stage 4 — Finish the branch

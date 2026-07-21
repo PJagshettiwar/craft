@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, Agent
 
 # /craft-review — review before you archive
 
-Read `PROJECT.md` for test/lint commands. Then invoke the `reviewing-and-verifying` skill.
+Read `CLAUDE.md` for test/lint commands. Then invoke the `reviewing-and-verifying` skill.
 
 Apply these **Superpowers layers** on top of the base skill:
 
@@ -49,8 +49,8 @@ Required changes: <specific, ordered — empty if APPROVE>
 
 Run each command and show real output. Do not claim the gate passed without output.
 
-- Full test suite: `<test command from PROJECT.md>`
-- Lint/type-check: `<lint command from PROJECT.md>`
+- Full test suite: `<test command from CLAUDE.md>`
+- Lint/type-check: `<lint command from CLAUDE.md>`
 - `openspec validate --strict`
 
 <HARD-GATE>

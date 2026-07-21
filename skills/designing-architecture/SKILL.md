@@ -25,7 +25,7 @@ Never propose a design that contradicts real codebase structure. Quote the evide
 ## Step 2 — Validate design decisions
 For each architectural decision in the brainstorming design:
 1. Restate which approved requirement it satisfies (traceability).
-2. Confirm it matches the existing patterns in this codebase (from `PROJECT.md` and explorer).
+2. Confirm it matches the existing patterns in this codebase (from `CLAUDE.md` and explorer).
 3. State confidence: high / medium / low.
 4. For medium/low-confidence decisions, use **AskUserQuestion** before committing:
    > "I'm considering [option A] because [reason], but [option B] is also possible.
@@ -50,7 +50,7 @@ Typically:
 - `path/to/file` — new | modified | deleted: <what and why>
 ```
 
-## Key design principles (from PROJECT.md conventions)
+## Key design principles (from CLAUDE.md conventions)
 - **Reuse first.** Prefer existing patterns before introducing new abstractions.
 - **Simplest design that meets requirements.** Complexity only when a requirement forces it.
 - **Every decision traces to a requirement.** No gold-plating; no speculative abstractions.

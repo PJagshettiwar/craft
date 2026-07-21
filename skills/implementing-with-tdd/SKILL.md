@@ -46,7 +46,7 @@ Use **AskUserQuestion** when:
 - Implementation reveals a design conflict: pause, explain the conflict, ask whether to update `design.md` or take a different approach.
 - A bug is found during implementation: invoke `superpowers:systematic-debugging` (root cause before any fix).
 
-Read `PROJECT.md` for exact build/test/lint commands and code conventions. Follow existing patterns.
+Read `CLAUDE.md` for exact build/test/lint commands and code conventions. Follow existing patterns.
 
 ## Progress output (per task)
 ```

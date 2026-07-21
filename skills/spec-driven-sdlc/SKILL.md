@@ -22,7 +22,7 @@ If the problem statement is missing or vague, use **AskUserQuestion** (open-ende
 One question at a time. Don't ask multiple questions in one message. Ask the most
 important thing first; ask follow-ups based on answers.
 
-Read `PROJECT.md` and `AGENTS.md` for this project's context before acting.
+Read `CLAUDE.md` and `AGENTS.md` for this project's context before acting.
 
 ## Pipeline
 

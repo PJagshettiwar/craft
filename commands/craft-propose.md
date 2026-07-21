@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, Agent
 
 # /craft-propose — propose a change
 
-Read `PROJECT.md` for stack, conventions, and commands.
+Read `CLAUDE.md` for stack, conventions, and commands.
 
 <HARD-GATE>
 Do NOT create any OpenSpec artifact until:
