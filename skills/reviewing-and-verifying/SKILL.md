@@ -35,14 +35,10 @@ If post-impl-code-reviewer returns REQUEST CHANGES:
 
 ## Stage 2 — Code quality & security
 post-impl-code-reviewer also covers quality (conventions, clarity, no dead code, no added scope) and
-security (input validation, no injection, no secrets in logs, least privilege). Its output:
-```
-Verdict: APPROVE | APPROVE WITH NITS | REQUEST CHANGES | BLOCK
-Spec compliance: <met / gaps with file:line>
-Quality: <findings with file:line>
-Security: <findings with file:line>
-Required changes: <specific, ordered — empty if APPROVE>
-```
+security (input validation, no injection, no secrets in logs, least privilege).
+
+The agent returns render-ready Markdown with tables, structured sections, and formatted findings.
+**Display the agent's response verbatim** — do not reformat, restructure, or re-summarize.
 
 ## Stage 3 — Definition of done (apply superpowers:verification-before-completion)
 Run each of these and show the real output before claiming the gate is passed:

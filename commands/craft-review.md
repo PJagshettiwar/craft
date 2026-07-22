@@ -36,14 +36,8 @@ It verifies each EARS scenario maps to a real, passing assertion and every task 
 post-impl-code-reviewer also covers: conventions, clarity, no dead code, no added scope,
 input validation, no injection, no secrets in logs, least privilege.
 
-Expected verdict format:
-```
-Verdict: APPROVE | APPROVE WITH NITS | REQUEST CHANGES | BLOCK
-Spec compliance: <met / gaps with file:line>
-Quality: <findings with file:line>
-Security: <findings with file:line>
-Required changes: <specific, ordered — empty if APPROVE>
-```
+The agent returns render-ready Markdown with tables, structured sections, and formatted findings.
+**Display the agent's response verbatim** — do not reformat, restructure, or re-summarize.
 
 ## Stage 3 — Definition of done (superpowers:verification-before-completion)
 
