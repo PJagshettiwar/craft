@@ -6,7 +6,8 @@
 # check deterministically is UNCHECKED, never DRIFT — a false drift signal makes
 # craft downgrade a good section to "hints" and is worse than no signal at all.
 #
-# Usage:  craft-doctor.sh [--file PATH] [--quiet] [--selftest]
+# Usage:  craft-doctor.sh [--file PATH] [--quiet] [--verbose] [--selftest]
+#         craft-doctor.sh --tests [--base REF]   test-suite weakening check
 # Exit:   0 = ran successfully (drift is reported, not fatal — warnings never block)
 #         1 = could not run (no file, bad args)
 #         2 = selftest failed
@@ -18,6 +19,10 @@
 #   SUMMARY    drift=<n> unchecked=<n> stale=<n> lines=<n>/<max> sections_drifted=<a,b>
 
 set -uo pipefail
+
+# Absolute path to this script, resolved before any cd. The selftest changes
+# directory twice, so $OLDPWD is not a reliable way back.
+SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 
 FILE="CLAUDE.md"
 QUIET=0
@@ -35,6 +40,8 @@ while [ $# -gt 0 ]; do
     --quiet)    QUIET=1; shift ;;
     --verbose)  VERBOSE=1; shift ;;
     --selftest) selftest=1; shift ;;
+    --tests)    tests_mode=1; shift ;;
+    --base)     BASE="${2:-}"; shift 2 ;;
     -h|--help)  sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "craft-doctor: unknown arg '$1'" >&2; exit 1 ;;
   esac
@@ -89,6 +96,73 @@ extract() {
   ' "$1"
 }
 
+note() { [ "${QUIET:-0}" = 1 ] || echo "$1"; }
+
+# --------------------------------------------------------------- tests mode --
+# `--tests` answers one question the TDD doctrine cannot answer by itself:
+# did the suite get WEAKER while the feature got built?
+#
+# Agents game tests. They skip them, delete assertions, and write tests that only
+# assert a mock was called. Every one of those produces a green checkmark, which is
+# a cheap reward signal. This compares the working tree against a merge base and
+# reports the three mechanical signatures of that.
+#
+# It reports. It never blocks — a legitimate refactor can lower an assertion count.
+# The point is that it becomes visible instead of silent.
+if [ "${tests_mode:-0}" = 1 ]; then
+  BASE="${BASE:-$(git merge-base HEAD origin/HEAD 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD~1)}"
+  git rev-parse --verify "$BASE" >/dev/null 2>&1 || {
+    echo "SUMMARY-TESTS unavailable — cannot resolve base '$BASE'"; exit 0; }
+
+  # Test files, per the usual conventions. Deliberately broad: a false positive
+  # here costs one line of output, a false negative costs a shipped fake test.
+  is_test='(^|/)(tests?|spec|__tests__)/|[._-](test|spec)s?\.[a-z]+$|Test[s]?\.[a-z]+$|_test\.[a-z]+$'
+  assert_re='assert|expect\(|should\b|EXPECT_|XCTAssert|verify\('
+  skip_re='@Disabled|@Ignore|\.skip\(|\.only\(|xit\(|xdescribe\(|@pytest\.mark\.skip|t\.Skip\(|#\[ignore\]'
+
+  deleted=0; skipped=0; weakened=0; checked=0
+
+  # base→worktree covers committed AND unstaged; --cached adds staged-but-uncommitted.
+  # Union of both, because a review can be asked for at any of those three points.
+  changed="$(git diff --name-only "$BASE" 2>/dev/null; git diff --cached --name-only "$BASE" 2>/dev/null)"
+  for f in $(echo "$changed" | sort -u); do
+    echo "$f" | grep -qE "$is_test" || continue
+    checked=$((checked + 1))
+
+    if [ ! -f "$f" ]; then
+      note "TEST-DELETED   $f — test file removed; deleting a test is a spec change"
+      deleted=$((deleted + 1)); continue
+    fi
+
+    # No `|| echo 0` — grep -c already prints a count on no-match, so the fallback
+    # would emit a second line and every numeric comparison below would break.
+    before=$(git show "$BASE:$f" 2>/dev/null | grep -cE "$assert_re"); before=${before:-0}
+    after=$(grep -cE "$assert_re" "$f"); after=${after:-0}
+    if [ "$after" -lt "$before" ]; then
+      note "TEST-WEAKENED  $f — assertions $before → $after"
+      weakened=$((weakened + 1))
+    fi
+
+    sb=$(git show "$BASE:$f" 2>/dev/null | grep -cE "$skip_re"); sb=${sb:-0}
+    sa=$(grep -cE "$skip_re" "$f"); sa=${sa:-0}
+    if [ "$sa" -gt "$sb" ]; then
+      note "TEST-SKIPPED   $f — skip/disable markers $sb → $sa"
+      skipped=$((skipped + 1))
+    fi
+
+    # A test file with no assertion pattern at all is not a test.
+    if [ "$after" -eq 0 ]; then
+      note "TEST-EMPTY     $f — no assertion found in a test file"
+      weakened=$((weakened + 1))
+    fi
+  done
+
+  total=$((deleted + skipped + weakened))
+  echo "SUMMARY-TESTS files=$checked deleted=$deleted skipped=$skipped weakened=$weakened base=$BASE"
+  [ "$total" -eq 0 ] || echo "  → Not necessarily wrong. But each one needs a sentence in the review saying why."
+  exit 0
+fi
+
 # ------------------------------------------------------------------ selftest --
 if [ "${selftest:-0}" = 1 ]; then
   tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
@@ -111,7 +185,7 @@ Call `Widget.build()` before `super.open(ctx)` — symbols, not files.
 ```
 EOF
   cd "$tmp" || exit 2
-  out="$("$OLDPWD/scripts/craft-doctor.sh" --file CLAUDE.md 2>&1)"
+  out="$("$SELF" --file CLAUDE.md 2>&1)"
   fail=0
   check() { # description, pattern, expect(0=present,1=absent)
     if echo "$out" | grep -q "$2"; then got=0; else got=1; fi
@@ -131,7 +205,29 @@ EOF
   # A real 283-line CLAUDE.md produced 12 such false positives before this rule.
   check "dotted symbol is not a path" "DRIFT.*path.*HttpClient"   1
   check "method call is not a path"   "DRIFT.*Widget.build()"     1
-  [ "$fail" = 0 ] && echo "SELFTEST PASS (12 checks)"
+
+  # --- --tests mode: the four ways an agent games a suite -------------------
+  tg="$tmp/tg"; mkdir -p "$tg/tests"; cd "$tg" || exit 2
+  git init -q .
+  printf 'def test_a():\n    assert 1 == 1\n    assert 2 == 2\n' > tests/test_a.py
+  printf 'def test_b():\n    assert 3 == 3\n' > tests/test_b.py
+  printf 'def test_c():\n    assert 4 == 4\n' > tests/test_c.py
+  git add -A && git -c user.email=t@t -c user.name=t commit -qm base
+  base=$(git rev-parse HEAD)
+  printf 'def test_a():\n    assert 1 == 1\n' > tests/test_a.py                                    # weakened
+  printf 'import pytest\n@pytest.mark.skip\ndef test_b():\n    assert 3 == 3\n' > tests/test_b.py  # skipped
+  rm tests/test_c.py                                                                               # deleted
+  printf 'def test_d():\n    pass\n' > tests/test_d.py                                             # empty
+  git add -A
+  tout="$("$SELF" --tests --base "$base" 2>&1)"
+  tcheck() { echo "$tout" | grep -q "$2" || { echo "SELFTEST FAIL: $1"; fail=1; }; }
+  tcheck "weakened assertions detected" "TEST-WEAKENED.*test_a.py.*2 . 1"
+  tcheck "new skip marker detected"     "TEST-SKIPPED.*test_b.py"
+  tcheck "deleted test detected"        "TEST-DELETED.*test_c.py"
+  tcheck "assertion-free test detected" "TEST-EMPTY.*test_d.py"
+  tcheck "counts are single integers"   "deleted=1 skipped=1 weakened=2"
+
+  [ "$fail" = 0 ] && echo "SELFTEST PASS (17 checks)"
   exit "$fail"
 fi
 
@@ -140,7 +236,6 @@ fi
 
 drift=0; unchecked=0; stale=0
 drifted_sections=""
-note() { [ "$QUIET" = 1 ] || echo "$1"; }
 mark_section() {
   case ",$drifted_sections," in
     *",$1,"*) ;;

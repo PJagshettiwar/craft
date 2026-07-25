@@ -640,15 +640,15 @@ Without this the map decays and P1 returns.
 |---|---|---|---|
 | **0** ✅ | `scripts/craft-doctor.sh` (deterministic tiers only, §2.6, 12 selftests, 0 false positives on a real 283-line CLAUDE.md); `NOTICE` (Superpowers 5.0.7 + OpenSpec ≥1.6.0); `scripts/check-doctrine.sh` (17 literals, verified against upstream); `scripts/sync-doctrine.sh` (replaces the rejected `@`-expansion, §5.4) | none | P2, licence |
 | **0b** | Baseline measurement on 3 fixed PRs — tokens **and** human-judged real findings. Needs real PRs; blocks the §9 comparisons, not waves 1-2a. | none | measurement |
-| **1** | `skills/craft-sdlc` spine + `doctrine/` files (§5.4) incl. Architect lens and Preflight; git-history lookups (§2.2); `/craft-explore` and `/craft-apply` self-contained | 0 | P10, P11, the lens |
+| **1** ✅ | `skills/craft-sdlc` spine + `doctrine/` files (§5.4) incl. Architect lens and Preflight; git-history lookups (§2.2); `/craft-explore` and `/craft-apply` self-contained | 0 | P10, P11, the lens |
 | **2a** ✅ | All seven remaining callers rewritten self-contained: `propose`, `review`, `review-spec`, `archive` (+ accumulation loop §2.5), `init`, `pr-review`, `sdlc`. `Agent` stripped from every `allowed-tools`. Zero `superpowers:` / `opsx:` / agent-dispatch references remain in `commands/`. Also fixed: `craft-pr.md` pointed at the renamed `spec-driven-sdlc`; `craft-pr-review` now diffs from `merge-base`, not the base tip. | 1 | P10, P11, P5 |
-| **2b** | **Point of no return.** Behavioural spot-check (§5.3) must pass 5/5 on all four rows. Then delete 4 agents + 5 skills, remove agent symlinks from `~/.claude/agents/`, update `.claude-plugin/plugin.json`, update `README.md` and `NOTES.md`. | 2a | P5, P8 |
-| **3** | Reviewer surgery: read budget, cite-as-you-read, sonnet + escalation, cache order, size routing | 2b | P8 |
-| **4** | Finding discipline + `## Review Config` + Conciseness & Reuse dimension | 3 | P6 |
-| **5** | Reuse check in apply + `## Reuse Map` in init | 1, 2a | P1 |
-| **6** | TDD anti-gaming + `craft-doctor --tests` | 1 | P7 |
-| **7** | Serena block in init; symbol queries in apply + review, grep fallback; symbol-anchor checking switched on in doctor | 5 | P1, P8, K5 |
-| **8** | Length budgets, `## Rejected`, symbol anchors in delta specs, spec-drift check | 2a | P3, P9 |
+| **2b** ⚠ | Deletions **done** — 4 agents + 5 skills removed, `README.md` and `plugin.json` description updated, symlink cleanup added to init. **The gate itself is UNRUN:** `docs/wave-2b-spot-check.md` holds the four scenarios × 5 runs, and no row has been executed. Deletions are git-reversible (see that doc); shipping unverified is not. `NOTES.md` untouched — gitignored personal notes. | 2a | P5, P8 |
+| **3** ✅ | `doctrine/review-discipline.md`: read budget, cite-as-you-read, size routing, `model: sonnet` + ESCALATE rule on both reviewers | 2a | P8 |
+| **4** ✅ | Finding cap (10, after severity sort), CERTAIN/LIKELY confidence, nits out of inline comments, `## Review Config` honoured, Conciseness & Reuse dimension | 3 | P6 |
+| **5** ✅ | Reuse check blocks RED in apply (wave 1); `## Reuse Map` drafted in init (wave 2a) | 1, 2a | P1 |
+| **6** ✅ | Test-validity rules in `doctrine/tdd.md`; `craft-doctor.sh --tests` detects deleted tests, new skip markers, dropped assertion counts and assertion-free test files, wired into the review gate. 5 selftests. | 1 | P7 |
+| **7** ◐ | Serena block + measured recommendation in init ✅; symbol queries with grep fallback in the preflight ✅; doctor's symbol tier gated on `CRAFT_SERENA` ✅ — **but never run against a live Serena MCP**, so treat as unverified | 5 | P1, P8, K5 |
+| **8** ✅ | Length budgets in propose; `## Rejected` asked in init and written back in archive; `Touches:` symbol anchors in delta specs; spec-drift check in review; handoffs + compaction in every phase | 2a | P3, P4, P9 |
 
 Handoffs and compaction points move into **Wave 1** — §6 makes them intrinsic to a
 self-contained command, not a later addition.
@@ -737,5 +737,6 @@ If real findings drop: revert model downgrade → read budget → finding cap, i
 
 ---
 
-*Status: blueprint pending approval. Wave 0 is blocking — no deletions until `NOTICE`,
-`craft-doctor.sh`, and the doctrine-grep check exist.*
+*Status: waves 0-8 built. The one outstanding gate is the wave-2b behavioural spot-check —
+four scenarios, five runs each, recorded in `docs/wave-2b-spot-check.md`. Until it passes,
+craft-v2 is unverified, not proven. Wave 0b (cost baseline) also needs real PRs.*

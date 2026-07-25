@@ -1,156 +1,153 @@
 # craft — spec-driven SDLC toolkit
 
-A lean, cross-IDE toolkit. Give it a **problem statement**; it drives requirements → design →
-tasks → implement → review → archive using [OpenSpec], with [Superpowers] discipline built in.
-Works with **Claude Code, Cursor, and GitHub Copilot**.
+Give it a **problem statement**; it drives explore → propose → implement → review → archive,
+emitting [OpenSpec] artifacts. Works with **Claude Code, Cursor, and GitHub Copilot**.
+
+craft is **self-contained**. It installs nothing, invokes no other plugin, and spawns no
+subagents. Every command is one file you can read top to bottom.
 
 ---
 
-## How it works
+## What makes it different
 
-You describe a problem. craft asks ONE clarifying question at a time, builds a spec, implements
-test-first, reviews against the spec, and archives — fully guided. You never pick a skill,
-agent, or model manually.
+**It behaves like the engineer who wrote your codebase, not one who just read the ticket.**
+
+Every phase opens by establishing what it actually knows — the owning module, the nearest
+sibling implementation, who calls the thing, which tests cover it, when it last changed — and
+then declares what it does *not* know:
+
+```
+CONTEXT: module=auth siblings=SessionFilter.java callers=4 tests=AuthFilterTest last-touched=2026-03-11 a7981ec
+KNOWN:   token validation already lives in TokenValidator; the Reuse Map points at it
+UNKNOWN: whether the refresh path is expected to share that validator — needs the ticket author
+MODE:    grep-only
+```
+
+`UNKNOWN:` may not be empty by default. An author knows the edge of their knowledge; a fresher
+assumes. That line turns a silent assumption into one you can correct in five seconds.
+
+**It looks before it writes.** `/craft-apply` cannot write a test until it has emitted
+`REUSE: extending X` or `NEW: searched <terms>, nothing found` — checked against the Reuse Map,
+the symbol table, and git history. The most common defect in AI-written code is the fourth copy
+of a helper that already exists; this is the thing that stops it.
+
+**It reads git as memory.** "We tried that in March and reverted it" is knowledge no index or
+language server holds. craft derives it — bounded `git log -S`, `--diff-filter=D`, `blame` — and
+a diff that undoes a prior deliberate commit is a review finding with the SHA attached.
+
+**It doesn't trust the docs blindly.** `scripts/craft-doctor.sh` verifies `CLAUDE.md` against
+reality — dead paths, missing binaries, stale sections — with no model involved. Anything it
+cannot prove is reported `UNCHECKED`, never `DRIFT`: a false drift signal is worse than none.
+
+**It learns.** `/craft-archive` writes back at most three lines to `CLAUDE.md` — a new shared
+utility, an established pattern, an approach that was tried and abandoned. The cap is what keeps
+it from becoming an auto-generated wiki, which measurably makes agents worse.
+
+---
+
+## Pipeline
 
 ```
 /craft-explore    →   /craft-propose   →   /craft-apply
   (fuzzy idea?)         (build spec)         (TDD impl)
 
 /craft-review-spec →  /craft-review     →   /craft-archive   →   /craft-pr
-  (spec vs code)        (code vs spec)        (verify + move)      (PR + survey)
+  (spec vs code)        (code vs spec)        (verify + learn)     (PR + survey)
 
 /craft-pr-review                        ← review anyone's PR (standalone)
-  (worktree → review → comment)
 
                   or just:
 
-/craft-sdlc "describe your problem"   ← drives the full pipeline automatically
+/craft-sdlc "describe your problem"   ← drives the whole thing
 ```
 
----
+One phase per session. Each ends by writing a file and telling you to `/compact` — quality
+degrades from about 70% context fill, and you do not want the review happening there.
 
 ## Commands
 
 | Command | When to use |
 |---|---|
-| `/craft-sdlc` | **Main entry point.** Describe any problem — drives the full pipeline. |
-| `/craft-explore` | Fuzzy problem? Think it through first. Explore ideas, investigate code, compare options. No code written. |
-| `/craft-propose` | Create OpenSpec artifacts (proposal + specs + design + tasks) in one step. |
-| `/craft-apply` | Implement tasks test-first. RED → GREEN → REFACTOR per task. Iron Law enforced. |
-| `/craft-review-spec` | Review specs against the codebase BEFORE implementation — find edge cases, missing scenarios, infeasible assumptions. Inverse of `/craft-review`. |
-| `/craft-review` | Review implementation — spec compliance, code quality, security, definition-of-done gate. |
-| `/craft-archive` | Verify review passed, assess delta spec sync, then archive the change. |
-| `/craft-pr` | Create a PR from the project template + collect a Claude Code experience survey → Jira. |
-| `/craft-pr-review` | **Standalone.** Review any PR in an isolated worktree — quality, security, defense-in-depth. Posts inline comments. |
-| `/craft-init` | First-time setup. Re-run anytime to refresh `CLAUDE.md` or wire a new IDE. |
-
----
+| `/craft-sdlc` | **Main entry point.** Describe any problem; it drives the pipeline. |
+| `/craft-explore` | Fuzzy problem? Think it through. Checks whether it's been tried before. No code. |
+| `/craft-propose` | OpenSpec artifacts in one step. Each scenario names the symbols it touches. |
+| `/craft-apply` | Implement test-first. Reuse check blocks the first test of every task. |
+| `/craft-review-spec` | Drill the specs against the codebase *before* coding. |
+| `/craft-review` | Spec compliance, quality, security, conciseness & reuse, definition of done. |
+| `/craft-archive` | Verify, sync delta specs, write back what was learned, archive. |
+| `/craft-pr` | PR from the project template + experience survey. |
+| `/craft-pr-review` | **Standalone.** Review any PR in an isolated worktree. Posts inline comments. |
+| `/craft-init` | Setup. `--repair` fixes CLAUDE.md drift. Re-run anytime. |
 
 ## Quick start
 
-**Step 1 — Prerequisites**
-
 ```bash
-# Superpowers plugin (Claude Code)
-/plugin marketplace add obra/superpowers
-/plugin install superpowers
-
-# OpenSpec CLI
-npm i -g @fission-ai/openspec@latest
+npm i -g @fission-ai/openspec@latest   # CLI >= 1.6.0
 openspec init
 ```
 
-**Step 2 — Set up in your repo**
-
-Copy the `craft/` folder into your repo, then in Claude Code:
+Then in Claude Code:
 
 ```
 /craft-init
 ```
 
-This profiles your project, validates or creates `CLAUDE.md` (the single source of truth every
-skill reads automatically), and wires Claude / Cursor / Copilot.
-
-**Step 3 — Build something**
+It verifies or creates `CLAUDE.md`, drafts a Reuse Map with your approval, asks what your team
+has already tried and rejected, wires Cursor/Copilot, and — after measuring your repo — tells
+you honestly whether optional structural code intelligence is worth its per-session cost.
 
 ```
 /craft-sdlc "add rate limiting to the public API"
 /craft-sdlc "the login endpoint returns 500 when email has a plus sign"
-/craft-sdlc "refactor the payment module to support multiple currencies"
 ```
-
-Or drive phases manually:
-
-```
-/craft-explore "thinking about switching from REST to gRPC"
-/craft-propose add-dark-mode
-/craft-apply add-dark-mode
-/craft-review add-dark-mode
-/craft-archive add-dark-mode
-/craft-pr TICKET-1234
-```
-
----
 
 ## What's inside
 
 ```
 craft/
-├── commands/          Slash commands (10 total)
-│   ├── craft-init.md
-│   ├── craft-sdlc.md
-│   ├── craft-explore.md
-│   ├── craft-propose.md
-│   ├── craft-apply.md
-│   ├── craft-review-spec.md
-│   ├── craft-review.md
-│   ├── craft-archive.md
-│   ├── craft-pr.md
-│   └── craft-pr-review.md
-├── skills/            Auto-activated by description (no manual invocation)
-│   ├── spec-driven-sdlc/       Pipeline orchestrator
-│   ├── writing-requirements/   EARS spec authoring
-│   ├── designing-architecture/ Design validation
-│   ├── planning-tasks/         Task ordering + TDD sequencing
-│   ├── implementing-with-tdd/  RED-GREEN-REFACTOR discipline
-│   └── reviewing-and-verifying/ Spec compliance + quality + archive
-├── agents/            Context-isolated subagents
-│   ├── codebase-explorer.md   Profiles the repo (read-only, Sonnet)
-│   ├── pre-impl-spec-reviewer.md  Reviews specs vs codebase before implementation (read-only, Opus)
-│   ├── post-impl-code-reviewer.md Reviews code vs specs after implementation (read-only, Opus)
-│   └── pr-reviewer.md             Reviews any PR in isolation (read-only, Opus)
+├── commands/     10 slash commands, each fully self-contained
+├── doctrine/     shared instruction text, single source of truth
+│   ├── architect.md          the lens + the ladder + forced per-phase output
+│   ├── preflight.md          CONTEXT/KNOWN/UNKNOWN, source hierarchy, git-as-memory
+│   ├── review-discipline.md  read budget, cite-as-you-read, finding caps
+│   ├── tdd.md                Iron Law, RED-GREEN-REFACTOR, test-validity rules
+│   ├── debugging.md          root cause before fixes, four phases
+│   └── verification.md       evidence before claims
+├── skills/craft-sdlc/        the one skill — a thin spine, auto-triggers on a problem
+└── scripts/
+    ├── craft-doctor.sh       verifies CLAUDE.md; --tests catches suite weakening
+    ├── sync-doctrine.sh      inlines doctrine into commands (--check gates CI)
+    └── check-doctrine.sh     proves the copied doctrine is present and intact
 ```
 
----
-
-## IDE setup
-
-| Tool | How craft works |
-|---|---|
-| **Claude Code** | Symlink `commands/` → `~/.claude/commands/`, `skills/` → `~/.claude/skills/`, `agents/` → `~/.claude/agents/`. `/craft-init` validates `CLAUDE.md` as the single source of truth. |
-| **Cursor** | Reads `SKILL.md` natively — no extra setup. |
-| **Copilot** | `/craft-init` can add `.github/copilot-instructions.md` as a pointer. |
-
----
+Doctrine is **inlined into commands at build time**, not referenced at runtime. Edit
+`doctrine/*.md`, run `scripts/sync-doctrine.sh`. Commands stay literally self-contained; there
+is no hop that can silently fail to happen.
 
 ## Design principles
 
-**Less, but effective** — ten commands; you never pick a skill, agent, or model.
+**No dependencies at runtime.** No plugin invocations, no subagents, no required MCP server.
+Optional structural tooling is detected and degrades to grep, and every command states which
+mode it ran in.
 
-**Superpowers discipline baked in** — every command carries HARD-GATEs (no code without
-a failing test, no "done" without real command output), AskUserQuestion one-at-a-time
-for all clarification, and explicit Related skills cross-references.
+**No subagents, deliberately.** Review runs in a fresh session reading files, not in a spawned
+agent. Same isolation, no context-handoff loss, and you can watch it work.
 
-**External verification only** — tests, linters, and `openspec validate` prove correctness.
-Self-inspection is not verification. One correction round maximum.
+**Evidence before claims.** Tests, linters and `openspec validate` prove correctness.
+Self-inspection is not verification.
 
-**One source of truth** — the OpenSpec change folder. Each phase reads one artifact, writes one.
-Delta specs merge to `openspec/specs/` on archive — the living spec stays current.
+**Human-authored knowledge, machine-verified.** `CLAUDE.md` is written by people and checked by
+a script. craft never regenerates it — auto-generated context files measurably reduce task
+success.
 
----
+**Code beats prose.** When `CLAUDE.md` and the codebase disagree, the codebase wins and the doc
+is wrong. That is what makes a stale doc survivable instead of dangerous.
 
 ## Built on
 
-- [OpenSpec](https://github.com/Fission-AI/OpenSpec) — change lifecycle CLI
-- [Superpowers](https://github.com/obra/superpowers) — HARD-GATEs, TDD, debugging discipline
+- [OpenSpec](https://github.com/Fission-AI/OpenSpec) — change lifecycle CLI (>= 1.6.0)
+- [Superpowers](https://github.com/obra/superpowers) — TDD, debugging and verification doctrine,
+  copied under MIT with attribution. See [NOTICE](NOTICE).
 - [Agent Skills spec](https://agentskills.io/specification) — portable `SKILL.md` format
+
+[OpenSpec]: https://github.com/Fission-AI/OpenSpec
