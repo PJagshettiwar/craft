@@ -44,7 +44,39 @@ Use **TodoWrite** to track your progress through the task list alongside openspe
 Use **AskUserQuestion** when:
 - A task is ambiguous: "Task 3 says 'handle errors' — what types of error? What should the response be?"
 - Implementation reveals a design conflict: pause, explain the conflict, ask whether to update `design.md` or take a different approach.
-- A bug is found during implementation: invoke `superpowers:systematic-debugging` (root cause before any fix).
+- A bug is found during implementation: escalate to structured diagnosis (see below).
+
+## Structured Bug Diagnosis
+
+When the TDD loop hits an unexpected failure, escalate to `superpowers:systematic-debugging`.
+But first — know what IS and IS NOT an unexpected failure:
+
+**NOT unexpected (normal TDD):**
+- RED phase: test fails because implementation doesn't exist yet → proceed to GREEN
+- GREEN phase: test fails because implementation is incomplete → keep writing code
+
+**IS unexpected (escalate):**
+- A previously-passing test now fails after your change
+- GREEN-phase code causes failures in unrelated tests
+- Test fails for environmental reasons (missing config, service unavailable, flaky dependency)
+- Error doesn't match what the test asserts — wrong failure mode entirely
+
+<HARD-GATE>
+When an unexpected failure occurs, you MUST build a red-capable feedback loop BEFORE
+forming any hypothesis about the cause. A red-capable loop is a single command that
+reliably reproduces the specific failure. If you catch yourself reasoning about the
+cause before this command exists — STOP. No feedback loop, no hypothesis.
+</HARD-GATE>
+
+If you cannot build a reliable feedback loop after multiple attempts, STOP — list what you
+tried and use **AskUserQuestion** to request help from the user. Do not proceed without a signal.
+
+**Escalation flow:**
+1. Build a feedback loop — a command that reproduces the failure (test invocation, script, curl)
+2. Invoke `superpowers:systematic-debugging` with the red-capable command as your starting point
+3. Tag all debug logs with a unique prefix (e.g. `[DEBUG-a4f2]`) for easy cleanup
+4. Write a regression test before the fix, at a correct seam
+5. After the fix: grep and remove all tagged debug artifacts before continuing
 
 Read `CLAUDE.md` for exact build/test/lint commands and code conventions. Follow existing patterns.
 

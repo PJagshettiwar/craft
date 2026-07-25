@@ -12,9 +12,6 @@ displays verbatim.
 You have access to the **full repo** at the current branch state. Use it. Read files, trace call
 chains, check callers, grep for patterns — you have the entire project.
 
-Read `CLAUDE.md` for the project's conventions and commands, and the change's `proposal.md`,
-`design.md`, delta specs, and `tasks.md`.
-
 ## Superpowers Skills — USE THESE
 
 You MUST use these superpowers skills to drive your review. They are not optional.
