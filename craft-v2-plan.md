@@ -522,15 +522,26 @@ that depends on a hop.
 
 **Per-file budgets replace the deleted 250-line cap:**
 
-| File | Hand-written budget | Generated doctrine | Composition |
-|---|---|---|---|
-| `craft-apply.md` | ~250 | tdd, debugging, verification, preflight, architect | openspec loop, reuse check, anti-gaming |
-| `craft-review.md` | ~250 | verification, preflight, architect | merged reviewer, finding discipline |
-| `craft-explore.md` | ~300 | preflight, architect | brainstorming is single-consumer, stays inline |
-| all others | ≤200 | preflight, architect | |
-
 The budget governs **hand-written** lines only. Generated regions don't count — they're
-reviewed once in `doctrine/`, not per command.
+reviewed once in `doctrine/`, not per command. Measured after waves 1-2a:
+
+| File | Hand | Generated | Total | Note |
+|---|---|---|---|---|
+| `craft-init.md` | 306 | 0 | 306 | ~75 lines are the literal welcome block — display, not instruction. No preflight (it builds the map the preflight reads). |
+| `craft-propose.md` | 272 | 155 | 427 | artifact discipline: EARS, length budgets, task shape, no-placeholders, file structure |
+| `craft-pr-review.md` | 269 | 155 | 424 | `gh` resolution + worktree mechanics + the full reviewer |
+| `craft-explore.md` | 239 | 155 | 394 | brainstorming is single-consumer, stays inline |
+| `craft-review.md` | 233 | 269 | 502 | merged from two reviewer agents |
+| `craft-apply.md` | 229 | 727 | 956 | the heaviest generated load: tdd + debugging + verification |
+| `craft-review-spec.md` | 183 | 155 | 338 | |
+| `craft-archive.md` | 179 | 269 | 448 | |
+| `craft-pr.md` | 116 | 0 | 116 | exempt from preflight — creates a PR, touches no code |
+| `craft-sdlc.md` | 77 | 0 | 77 | pure driver |
+
+The original "≤200 for all others" was a round number guessed before the content existed;
+three files exceed it and each was checked for scope creep rather than trimmed to fit. The
+operative rule stands: **a file over ~300 hand-written lines means the phase is doing too
+much** — that is the number to enforce on the next command added.
 
 A file over budget means the phase is doing too much — the original intent of the cap, now
 measured against reality instead of a round number.
@@ -630,7 +641,7 @@ Without this the map decays and P1 returns.
 | **0** ✅ | `scripts/craft-doctor.sh` (deterministic tiers only, §2.6, 12 selftests, 0 false positives on a real 283-line CLAUDE.md); `NOTICE` (Superpowers 5.0.7 + OpenSpec ≥1.6.0); `scripts/check-doctrine.sh` (17 literals, verified against upstream); `scripts/sync-doctrine.sh` (replaces the rejected `@`-expansion, §5.4) | none | P2, licence |
 | **0b** | Baseline measurement on 3 fixed PRs — tokens **and** human-judged real findings. Needs real PRs; blocks the §9 comparisons, not waves 1-2a. | none | measurement |
 | **1** | `skills/craft-sdlc` spine + `doctrine/` files (§5.4) incl. Architect lens and Preflight; git-history lookups (§2.2); `/craft-explore` and `/craft-apply` self-contained | 0 | P10, P11, the lens |
-| **2a** | Rewrite **every remaining caller**: `/craft-propose`, `/craft-review`, `/craft-review-spec`, `/craft-archive` (+ accumulation loop §2.5), **`/craft-init`**, **`/craft-pr-review`**, **`/craft-sdlc`**. Strip `Agent` from `allowed-tools` in craft-init, craft-review, craft-review-spec, craft-pr-review. | 1 | P10, P11, P5 |
+| **2a** ✅ | All seven remaining callers rewritten self-contained: `propose`, `review`, `review-spec`, `archive` (+ accumulation loop §2.5), `init`, `pr-review`, `sdlc`. `Agent` stripped from every `allowed-tools`. Zero `superpowers:` / `opsx:` / agent-dispatch references remain in `commands/`. Also fixed: `craft-pr.md` pointed at the renamed `spec-driven-sdlc`; `craft-pr-review` now diffs from `merge-base`, not the base tip. | 1 | P10, P11, P5 |
 | **2b** | **Point of no return.** Behavioural spot-check (§5.3) must pass 5/5 on all four rows. Then delete 4 agents + 5 skills, remove agent symlinks from `~/.claude/agents/`, update `.claude-plugin/plugin.json`, update `README.md` and `NOTES.md`. | 2a | P5, P8 |
 | **3** | Reviewer surgery: read budget, cite-as-you-read, sonnet + escalation, cache order, size routing | 2b | P8 |
 | **4** | Finding discipline + `## Review Config` + Conciseness & Reuse dimension | 3 | P6 |

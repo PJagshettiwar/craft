@@ -113,4 +113,4 @@ Confirm to the user that the survey has been posted to the Jira ticket.
 
 ## Related skills
 - **Before this:** `/craft-archive`
-- **Full pipeline:** `spec-driven-sdlc`
+- **Full pipeline:** `craft-sdlc`
