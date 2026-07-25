@@ -1,0 +1,75 @@
+craft — spec-driven SDLC toolkit
+Copyright (c) 2026 Pankaj Jagshettiwar
+Licensed under the MIT License. See LICENSE.
+
+================================================================================
+THIRD-PARTY MATERIAL INCORPORATED IN THIS PROJECT
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Superpowers — instruction text copied verbatim
+--------------------------------------------------------------------------------
+
+craft's SDLC commands and doctrine files incorporate instruction text copied,
+in places verbatim, from the Superpowers plugin.
+
+    Project:  Superpowers (https://github.com/obra/superpowers)
+    Author:   Jesse Vincent
+    Version:  5.0.7  (pinned — craft does not track upstream)
+    License:  MIT
+
+Material is derived from these skills:
+
+    brainstorming/SKILL.md                  → commands/craft-explore.md
+    writing-plans/SKILL.md                  → commands/craft-propose.md
+    test-driven-development/SKILL.md        → doctrine/tdd.md
+    systematic-debugging/SKILL.md           → doctrine/debugging.md
+    verification-before-completion/SKILL.md → doctrine/verification.md
+    executing-plans/SKILL.md                → commands/craft-apply.md
+
+Certain passages are reproduced verbatim by deliberate design rather than
+convenience: their value lies in exact wording that forecloses rationalisation
+(the Iron Law blocks, "Red Flags — STOP" lists, "Common Rationalizations"
+tables, the verification Gate Function, and the MANDATORY red/green verify
+steps). Paraphrasing them measurably weakens their effect, so they are not
+paraphrased.
+
+MIT License
+
+Copyright (c) 2025 Jesse Vincent
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+2. OpenSpec — CLI invocation sequences reproduced
+--------------------------------------------------------------------------------
+
+craft calls the OpenSpec CLI directly and reproduces its documented command
+sequences (`openspec new change`, `status --json`, `instructions <artifact>
+--json`, `validate`, `archive`, and the `--store` resolution rule).
+
+    Project:  OpenSpec (@fission-ai/openspec)
+    Version:  CLI >= 1.6.0  (required — craft's copied sequences assume this
+              command surface; a CLI downgrade breaks them silently)
+    License:  MIT
+
+No OpenSpec source code is vendored. craft does not invoke the openspec-*
+skills that `openspec init` installs into a project's .claude/skills/; those
+skills remain the property and responsibility of the OpenSpec project and are
+recreated by `openspec update`.
