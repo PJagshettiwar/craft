@@ -1,7 +1,7 @@
 ---
 description: Run the spec-driven SDLC pipeline. User provides a problem statement; the skill asks clarifying questions, then drives brainstorming → OpenSpec → implement (TDD) → review → archive.
 argument-hint: "<problem statement>"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
 # /sdlc

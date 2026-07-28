@@ -51,8 +51,8 @@ it from becoming an auto-generated wiki, which measurably makes agents worse.
 /craft-explore    →   /craft-propose   →   /craft-apply
   (fuzzy idea?)         (build spec)         (TDD impl)
 
-/craft-review-spec →  /craft-review-implementation     →   /craft-archive   →   /craft-pr
-  (spec vs code)        (code vs spec)        (verify + learn)     (PR + survey)
+/craft-review-spec →  /craft-review-implementation  →  /craft-archive  →  /craft-pr
+  (spec vs code)        (code vs spec)                  (verify + learn)    (PR + survey)
 
 /craft-review-pr                        ← review anyone's PR (standalone)
 

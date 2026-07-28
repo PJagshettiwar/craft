@@ -10,8 +10,8 @@ Review the change artifacts against the codebase to catch gaps, edge cases and w
 assumptions **before** any code is written. Rework caught here costs a paragraph; caught in
 review it costs a day.
 
-**The inverse of `/craft-review`:**
-- `/craft-review` checks code against specs — code is the subject, specs are the oracle
+**The inverse of `/craft-review-implementation`:**
+- `/craft-review-implementation` checks code against specs — code is the subject, specs are the oracle
 - `/craft-review-spec` checks specs against code — **specs are the subject, code is the oracle**
 
 **Your mandate:** treat every spec claim as a hypothesis. Verify it against the code. Find what
