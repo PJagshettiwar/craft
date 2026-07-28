@@ -1,5 +1,5 @@
 ---
-description: Archive a completed OpenSpec change — verifies review passed, checks artifacts and tasks, syncs delta specs, writes back what was learned, then archives. Use after craft-review returns APPROVE.
+description: Archive a completed OpenSpec change — verifies review passed, checks artifacts and tasks, syncs delta specs, writes back what was learned, then archives. Use after craft-review-implementation returns APPROVE.
 argument-hint: "[change name — leave blank to pick]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
@@ -80,6 +80,7 @@ the lookups, which is the point.
 When sources disagree, this order is binding:
 
 ```
+0. Comments/docstrings claims ABOUT the code — never evidence FOR it
 1. The code            ground truth for WHAT IS
 2. Git history         ground truth for WHY, and WHAT WAS ALREADY TRIED
 3. The tests           the contract for WHAT MUST KEEP WORKING
@@ -162,7 +163,7 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |
 <!-- doctrine:architect:end -->
 
@@ -170,10 +171,10 @@ A phase that skips its line is incomplete.
 
 <HARD-GATE>
 Do NOT archive until:
-1. `/craft-review` returned APPROVE or APPROVE WITH NITS.
+1. `/craft-review-implementation` returned APPROVE or APPROVE WITH NITS.
 2. The verification gate below has been run with real output shown.
 3. `openspec validate --strict` passes.
-If any of these is missing, run `/craft-review` first.
+If any of these is missing, run `/craft-review-implementation` first.
 </HARD-GATE>
 
 ## Step 1 — Select the change

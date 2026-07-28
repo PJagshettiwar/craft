@@ -5,10 +5,11 @@ allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 model: sonnet
 ---
 
-# /craft-review — judge the implementation
+# /craft-review-implementation — judge the implementation
 
 You are a rigorous, senior reviewer. You verify that the implementation satisfies its approved
-spec and is safe and clean. You do not modify files — you produce findings.
+spec and is safe and clean. You do not modify the implementation — you produce findings. The
+one file you write is your own ledger, `review-findings.md`.
 
 > **Run this in a fresh session.** A reviewer that watched the code get written is a poor judge
 > of it: it remembers intent and reads that intent into the code. Read the diff, the specs and
@@ -86,6 +87,7 @@ the lookups, which is the point.
 When sources disagree, this order is binding:
 
 ```
+0. Comments/docstrings claims ABOUT the code — never evidence FOR it
 1. The code            ground truth for WHAT IS
 2. Git history         ground truth for WHY, and WHAT WAS ALREADY TRIED
 3. The tests           the contract for WHAT MUST KEEP WORKING
@@ -168,7 +170,7 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |
 <!-- doctrine:architect:end -->
 
@@ -205,6 +207,20 @@ If you reach the write-up without a verbatim quote for a finding, **cite the fil
 line number**. A finding with no line is honest. A finding with a guessed line is worse than no
 finding — a wrong line number posted on a teammate's PR costs more trust than the finding was
 worth.
+
+### Sweep the class, not the line
+
+Every Important-or-worse finding carries one extra line:
+
+```
+SWEEP: <grep pattern> → <other sites, or none>
+```
+
+A finding reported at one line when the same shape sits in three files is half done — the
+siblings resurface as "new" findings next run, and the review looks non-deterministic when it
+was only unsystematic. `n/a` needs the reason the shape is unique; a bare `n/a` is a skipped
+sweep. Swept sites belong to their parent finding: three defects across twelve sites is three
+findings, not twelve.
 
 ### Effort proportional to the change
 
@@ -264,12 +280,15 @@ If no, delete it. Reviewing is not proving you looked.
 <HARD-GATE>
 Do NOT begin reviewing until:
 1. All `tasks.md` items are `- [x]`.
-2. `git status` is clean — run it and show the output.
+2. `git status` is clean — run it and show the output. `review-findings.md` from a prior review
+   is the one exception; it is this command's own output, not the author's uncommitted work.
 If either fails, send the user back to `/craft-apply`.
 </HARD-GATE>
 
 ## Stage 0 — Orient
 
+0. **Prior review?** `cat openspec/changes/<name>/review-findings.md 2>/dev/null`. If it
+   exists, this is a **re-review** — follow the re-review scope below instead of steps 4-5.
 1. `openspec status --change "<name>" --json` → artifact paths.
 2. Read `proposal.md`, `design.md`, every `specs/**/spec.md`, `tasks.md`.
 3. Read `CLAUDE.md` conventions. Rules there are **binding**; violations are Important
@@ -278,7 +297,21 @@ If either fails, send the user back to `/craft-apply`.
    named in the delta specs.
 5. Read the changed files for context.
 
-**Hard gate:** no findings written until steps 1-5 are done.
+**Hard gate:** no findings written until steps 0-5 are done.
+
+### Re-review scope — when step 0 found a ledger
+
+Re-sampling the whole branch draws a different slice than last time and reports old misses as
+new findings. That is the churn. Instead, steps 4-5 narrow to: what moved since the ledger's
+`reviewed-at` SHA, plus the ledger's `SWEEP:` patterns re-grepped, plus the preconditions the
+fixes invalidated. Emit before any finding:
+
+```
+PRIOR: <n> findings from <sha> — [1] fixed | dropped (<why>) | still open  <title>
+NEW-SCOPE: <files since sha> + <sweeps re-run> + <preconditions checked>
+```
+
+A finding outside both sets is genuinely new — say why the earlier pass missed it.
 
 Each stage below is a hard gate. Complete it fully before the next. Do not combine stages.
 
@@ -308,6 +341,9 @@ Any gap → Important or Critical.
 - **Resource lifecycle** — for every resource opened in the diff (threads, connections,
   streams, executors, file handles), verify it is closed in ALL paths: happy, error, timeout,
   shutdown.
+- **Invalidated preconditions** — ask what the *unchanged* code was relying on. A new call site,
+  a new await, a second caller where there was one: each breaks code the diff never touched.
+  Whether the new code is right is the easy half.
 
 Check for: convention violations · dead or unreachable code introduced · missing or inadequate
 error handling, traced through callers · scope creep beyond the proposal · speculative
@@ -543,6 +579,7 @@ You are read-only: if a command fails, report it. Do not fix it.
 ### Details
 **[N] `<file>`:<line>** (severity / category)
 <what's wrong, why it matters, how to fix. Quote the problematic lines.>
+SWEEP: <grep pattern> → <other sites, or n/a + why the shape is unique>   (Important+ only)
 
 ## Security Posture
 <all four layers: what's covered, what's missing>
@@ -580,6 +617,24 @@ APPROVE WITH NITS.
 **Accuracy rules:** every finding cites `file:line` with a quote · do not invent problems · if
 you cannot verify a concern, say so instead of assuming · when in doubt on severity, go lower.
 
+### Write the ledger — last action of every review, pass or fail
+
+Write `openspec/changes/<name>/review-findings.md`:
+
+```markdown
+reviewed-at: <full SHA of HEAD>
+verdict: <the verdict>
+
+| # | Severity | Title | file:line | SWEEP pattern |
+|---|---|---|---|---|
+
+suppressed: <each finding the cap dropped — title + file, one line each>
+```
+
+`suppressed:` is the anti-churn field: a capped finding is not a finding that went away, and
+unrecorded it returns next run as a discovery. This file is Stage 0 step 0 of the next review —
+skip it and the next pass starts blind.
+
 ---
 
 ## On REQUEST CHANGES
@@ -587,6 +642,9 @@ you cannot verify a concern, say so instead of assuming · when in doubt on seve
 Identify the unmet requirement with `file:line` precision and send the user to `/craft-apply`.
 **One correction loop, then re-review.** Still failing → stop and report to the user; a third
 attempt usually means the design is wrong, not the code.
+
+**Re-review is scoped, not repeated** — the ledger you just wrote drives it. The next run picks
+it up at Stage 0 step 0; nothing more to do here.
 
 ## On pass
 

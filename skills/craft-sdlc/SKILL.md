@@ -37,7 +37,7 @@ not rules.
                                                                   tasks done
                                                                        ▼
    5 Archive  ◀──review passed──  4 Review
-   /craft-archive                  /craft-review
+   /craft-archive                  /craft-review-implementation
 ```
 
 | Phase | Command | Produces | Gate |
@@ -45,7 +45,7 @@ not rules.
 | 1 Explore & design | `/craft-explore` | decision record — problem, scope, options, decision, rejected | **user approves the design** |
 | 2 Artifacts | `/craft-propose` | `proposal.md`, `design.md`, delta specs, `tasks.md` | `openspec validate` passes |
 | 3 Implement | `/craft-apply` | code + tests, task-by-task, test-first | tests pass, all tasks `[x]` |
-| 4 Review | `/craft-review` | findings, verdict | APPROVE / APPROVE WITH NITS |
+| 4 Review | `/craft-review-implementation` | findings, verdict | APPROVE / APPROVE WITH NITS |
 | 5 Archive | `/craft-archive` | deltas merged, knowledge written back | `openspec validate --strict` |
 
 ## The Architect lens runs through all five
@@ -92,7 +92,7 @@ So each phase **ends by writing its output to a file** and says:
 Each phase **starts by reading files**, never by relying on conversation history. Past ~60%
 context at a boundary, treat the compaction prompt as mandatory rather than advisory.
 
-`/craft-review` in particular should run in a **fresh session**. A reviewer that watched the
+`/craft-review-implementation` in particular should run in a **fresh session**. A reviewer that watched the
 code get written is a poor judge of it; reading only the diff, the specs and CLAUDE.md is the
 isolation that matters — and unlike a subagent, you can watch it happen.
 
@@ -106,8 +106,8 @@ If a "simple" fix reveals unexpected complexity, restart at Phase 1.
 - Fuzzy problem, or a decision to think through → `/craft-explore`
 - Problem already clear → `/craft-propose`
 - Artifacts exist, ready to build → `/craft-apply`
-- Code written, needs judging → `/craft-review` (fresh session)
-- Reviewing someone else's PR → `/craft-pr-review` (independent of this pipeline)
+- Code written, needs judging → `/craft-review-implementation` (fresh session)
+- Reviewing someone else's PR → `/craft-review-pr` (independent of this pipeline)
 
 Never pick a model, agent, or sub-skill manually. There are none to pick.
 

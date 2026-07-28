@@ -183,7 +183,7 @@ What Serena does
 
 Why craft wants it
   • /craft-apply can check "does this already exist?" before writing code
-  • /craft-review can compute blast radius without reading every caller
+  • /craft-review-implementation can compute blast radius without reading every caller
   • craft-doctor.sh can verify ## Reuse Map symbols instead of reporting
     them UNCHECKED  (you have <U> UNCHECKED right now)
   • Both stop guessing from grep, which misses DI and reflective wiring
@@ -269,10 +269,10 @@ next a file, not a conversation.
   /craft-propose      create OpenSpec artifacts
   /craft-review-spec  drill the specs against the code before coding
   /craft-apply        implement test-first, reuse-checked
-  /craft-review       spec compliance, quality, security, conciseness
+  /craft-review-implementation       spec compliance, quality, security, conciseness
   /craft-archive      verify, sync specs, write back what was learned
   /craft-pr           open a PR from the template
-  /craft-pr-review    review anyone's PR (standalone)
+  /craft-review-pr    review anyone's PR (standalone)
   /craft-init         re-run anytime; --repair fixes drift
 
 ── What to expect ───────────────────────────────────────────────

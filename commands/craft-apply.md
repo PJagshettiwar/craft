@@ -82,6 +82,7 @@ the lookups, which is the point.
 When sources disagree, this order is binding:
 
 ```
+0. Comments/docstrings claims ABOUT the code — never evidence FOR it
 1. The code            ground truth for WHAT IS
 2. Git history         ground truth for WHY, and WHAT WAS ALREADY TRIED
 3. The tests           the contract for WHAT MUST KEEP WORKING
@@ -164,7 +165,7 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |
 <!-- doctrine:architect:end -->
 
@@ -212,7 +213,7 @@ empty, explain that full workspace apply is not supported, treat linked repos as
 context, ask the user to select an affected area, and STOP before editing any files.
 
 **If `state: "blocked"`** (missing artifacts): show the message, suggest `/craft-propose`.
-**If `state: "all_done"`:** congratulate, suggest `/craft-review`.
+**If `state: "all_done"`:** congratulate, suggest `/craft-review-implementation`.
 
 ## Step 3 — Get apply instructions
 
@@ -790,7 +791,7 @@ Change: <name>   Schema: <schema-name>   Progress: M/M ✓
 Completed this session:
 - [x] Task 1 ...
 
-Next → /craft-review <name>   (start a fresh session — a reviewer that
+Next → /craft-review-implementation <name>   (start a fresh session — a reviewer that
                                watched the code get written is a poor judge of it)
 ```
 

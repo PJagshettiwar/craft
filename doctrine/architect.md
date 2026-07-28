@@ -49,5 +49,5 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |

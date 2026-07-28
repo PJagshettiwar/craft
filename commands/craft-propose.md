@@ -87,6 +87,7 @@ the lookups, which is the point.
 When sources disagree, this order is binding:
 
 ```
+0. Comments/docstrings claims ABOUT the code — never evidence FOR it
 1. The code            ground truth for WHAT IS
 2. Git history         ground truth for WHY, and WHAT WAS ALREADY TRIED
 3. The tests           the contract for WHAT MUST KEEP WORKING
@@ -169,7 +170,7 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |
 <!-- doctrine:architect:end -->
 
@@ -299,7 +300,7 @@ Every scenario states which symbols the implementation will create or modify:
 ```
 
 This is not bureaucracy. It is the anchor that lets `/craft-apply` search before it writes and
-`/craft-review` detect drift between what was specified and what was actually changed. A
+`/craft-review-implementation` detect drift between what was specified and what was actually changed. A
 scenario with no `Touches:` line cannot be checked later.
 
 ### Design — grounded, not guessed

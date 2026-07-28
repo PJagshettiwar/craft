@@ -30,6 +30,20 @@ line number**. A finding with no line is honest. A finding with a guessed line i
 finding — a wrong line number posted on a teammate's PR costs more trust than the finding was
 worth.
 
+### Sweep the class, not the line
+
+Every Important-or-worse finding carries one extra line:
+
+```
+SWEEP: <grep pattern> → <other sites, or none>
+```
+
+A finding reported at one line when the same shape sits in three files is half done — the
+siblings resurface as "new" findings next run, and the review looks non-deterministic when it
+was only unsystematic. `n/a` needs the reason the shape is unique; a bare `n/a` is a skipped
+sweep. Swept sites belong to their parent finding: three defects across twelve sites is three
+findings, not twelve.
+
 ### Effort proportional to the change
 
 | Size | How |

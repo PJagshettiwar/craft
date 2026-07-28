@@ -5,7 +5,7 @@ allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 model: sonnet
 ---
 
-# /craft-pr-review — review a pull request
+# /craft-review-pr — review a pull request
 
 Review any PR — yours or a teammate's — as the senior engineer who knows this codebase.
 
@@ -83,6 +83,7 @@ the lookups, which is the point.
 When sources disagree, this order is binding:
 
 ```
+0. Comments/docstrings claims ABOUT the code — never evidence FOR it
 1. The code            ground truth for WHAT IS
 2. Git history         ground truth for WHY, and WHAT WAS ALREADY TRIED
 3. The tests           the contract for WHAT MUST KEEP WORKING
@@ -165,7 +166,7 @@ A phase that skips its line is incomplete.
 | Propose | `STRUCTURE: N files, M new symbols` + one justification per new abstraction |
 | Apply, per task | `REUSE: extending <X>` or `NEW: searched <terms> via <serena\|grep>, nothing found` |
 | Apply, REFACTOR | `REFACTOR: deleted N lines / inlined <X> / no change because <Y>` |
-| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness |
+| Review | a **Conciseness & Reuse** finding section, ranked alongside correctness · `SWEEP:` on every Important+ finding · the ledger written, pass or fail |
 | Archive | the Reuse Map / Rejected write-back prompt |
 <!-- doctrine:architect:end -->
 
@@ -202,6 +203,20 @@ If you reach the write-up without a verbatim quote for a finding, **cite the fil
 line number**. A finding with no line is honest. A finding with a guessed line is worse than no
 finding — a wrong line number posted on a teammate's PR costs more trust than the finding was
 worth.
+
+### Sweep the class, not the line
+
+Every Important-or-worse finding carries one extra line:
+
+```
+SWEEP: <grep pattern> → <other sites, or none>
+```
+
+A finding reported at one line when the same shape sits in three files is half done — the
+siblings resurface as "new" findings next run, and the review looks non-deterministic when it
+was only unsystematic. `n/a` needs the reason the shape is unique; a bare `n/a` is a skipped
+sweep. Swept sites belong to their parent finding: three defects across twelve sites is three
+findings, not twelve.
 
 ### Effort proportional to the change
 
@@ -327,6 +342,21 @@ files matter most. A review spread thin over 2,000 lines finds nothing.
 
 ## Step 4 — Context
 
+**First: have you reviewed this PR before?** `gh pr view $PR_NUMBER --repo $OWNER/$REPO --comments`
+
+Any prior review of yours makes this a **re-review** — those comments are the ledger, since
+GitHub remembers what your session does not. Narrow the diff below to what moved since that
+review, re-grep the `SWEEP:` patterns in it, and check the preconditions the fixes invalidated.
+Emit before any finding:
+
+```
+PRIOR: <n> findings from <sha> — [1] fixed | dropped (<why>) | still open  <title>
+NEW-SCOPE: <files since sha> + <sweeps re-run> + <preconditions checked>
+```
+
+Re-sampling the whole diff instead is what makes each pass look like it found different
+problems. A finding outside both sets is genuinely new — say why the earlier pass missed it.
+
 ```bash
 gh pr diff $PR_NUMBER --repo $OWNER/$REPO --name-only
 git -C "$WORKTREE_PATH" diff --stat $BASE_SHA..$HEAD_SHA
@@ -436,6 +466,7 @@ with 60 nitpicks gets the whole review ignored, including the one finding that m
 ### Details
 **[N] `<file>`:<line>** (severity / category)
 <what's wrong, why it matters, how to fix. Quote the code.>
+SWEEP: <grep pattern> → <other sites, or n/a + why the shape is unique>   (Important+ only)
 
 ## Security Posture
 <all four layers>
@@ -457,6 +488,10 @@ BLOCK = ≥1 Critical.
 
 **Accuracy:** every finding cites `file:line` with a quote · never invent problems · if you
 cannot verify a concern, say so · when in doubt on severity, go lower.
+
+**The posted comments are the ledger** — GitHub is the only thing that remembers this review.
+The `SWEEP:` lines and `suppressed: <title + file for each capped finding>` must survive into
+what gets posted; a finding that exists only in the terminal is one the next pass rediscovers.
 
 ## Step 6 — Offer to post
 
@@ -509,4 +544,4 @@ Failure → warn, don't block: "Could not remove worktree at `<path>`. Clean up 
 - **Never post without asking** — terminal report first, then explicit approval
 - **Always clean up** — Step 7 runs unconditionally
 - **Right repo** — match OWNER/REPO before creating anything
-- Standalone: independent of the craft pipeline, complementary to `/craft-review`
+- Standalone: independent of the craft pipeline, complementary to `/craft-review-implementation`

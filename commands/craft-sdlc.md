@@ -1,10 +1,10 @@
 ---
-description: Run the spec-driven SDLC pipeline. Give it a problem statement; it drives explore → propose → implement (TDD) → review → archive, one phase per session.
+description: Run the spec-driven SDLC pipeline. User provides a problem statement; the skill asks clarifying questions, then drives brainstorming → OpenSpec → implement (TDD) → review → archive.
 argument-hint: "<problem statement>"
-allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 ---
 
-# /craft-sdlc — drive the pipeline
+# /sdlc
 
 Problem: **$ARGUMENTS**
 
@@ -33,7 +33,7 @@ simplicity.
 | A decision record exists, or the problem is genuinely clear | `/craft-propose` |
 | Artifacts exist, not yet reviewed against the codebase | `/craft-review-spec` |
 | Artifacts validated, tasks pending | `/craft-apply` |
-| All tasks `[x]` | `/craft-review` — **in a fresh session** |
+| All tasks `[x]` | `/craft-review-implementation` — **in a fresh session** |
 | Review returned APPROVE | `/craft-archive` |
 | Archived | `/craft-pr` |
 
@@ -62,7 +62,7 @@ So at every phase boundary:
 > `Phase complete → <artifact path>. Run /compact, then <next command>.`
 
 Phases read files, never conversation history. Past ~60% context, treat that prompt as
-mandatory. `/craft-review` in particular should start clean — a reviewer that watched the code
+mandatory. `/craft-review-implementation` in particular should start clean — a reviewer that watched the code
 get written is a poor judge of it.
 
 ## Trivial change exception

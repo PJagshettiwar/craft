@@ -51,10 +51,10 @@ it from becoming an auto-generated wiki, which measurably makes agents worse.
 /craft-explore    →   /craft-propose   →   /craft-apply
   (fuzzy idea?)         (build spec)         (TDD impl)
 
-/craft-review-spec →  /craft-review     →   /craft-archive   →   /craft-pr
+/craft-review-spec →  /craft-review-implementation     →   /craft-archive   →   /craft-pr
   (spec vs code)        (code vs spec)        (verify + learn)     (PR + survey)
 
-/craft-pr-review                        ← review anyone's PR (standalone)
+/craft-review-pr                        ← review anyone's PR (standalone)
 
                   or just:
 
@@ -68,16 +68,16 @@ degrades from about 70% context fill, and you do not want the review happening t
 
 | Command | When to use |
 |---|---|
+| `/craft-init` | **Run this first.** Setup. `--repair` fixes CLAUDE.md drift. Re-run anytime. |
 | `/craft-sdlc` | **Main entry point.** Describe any problem; it drives the pipeline. |
 | `/craft-explore` | Fuzzy problem? Think it through. Checks whether it's been tried before. No code. |
 | `/craft-propose` | OpenSpec artifacts in one step. Each scenario names the symbols it touches. |
 | `/craft-apply` | Implement test-first. Reuse check blocks the first test of every task. |
 | `/craft-review-spec` | Drill the specs against the codebase *before* coding. |
-| `/craft-review` | Spec compliance, quality, security, conciseness & reuse, definition of done. |
+| `/craft-review-implementation` | Spec compliance, quality, security, conciseness & reuse, definition of done. |
 | `/craft-archive` | Verify, sync delta specs, write back what was learned, archive. |
 | `/craft-pr` | PR from the project template + experience survey. |
-| `/craft-pr-review` | **Standalone.** Review any PR in an isolated worktree. Posts inline comments. |
-| `/craft-init` | Setup. `--repair` fixes CLAUDE.md drift. Re-run anytime. |
+| `/craft-review-pr` | **Standalone.** Review any PR in an isolated worktree. Posts inline comments. |
 
 ## Quick start
 
