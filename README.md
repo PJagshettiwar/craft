@@ -1,11 +1,10 @@
 # craft — spec-driven SDLC toolkit
 
-**This is not AI writing code from scratch. This is an architect who already knows your codebase
-telling AI how to behave like one.**
+**AI doesn't need to write better code. It needs to stop writing code nobody asked for.**
 
-craft encodes the instincts a senior engineer carries — check what exists before writing, know
-the edge of your own knowledge, remember what was tried and reverted — into enforceable doctrine.
-Give it a problem statement; it drives explore → propose → implement → review → archive, emitting
+craft encodes what a senior engineer does before touching the keyboard — check what exists, know
+the edge of your own knowledge, remember what was tried and reverted — into doctrine the model
+can't rationalise away. Give it a problem statement; it drives explore → propose → implement → review → archive, emitting
 [OpenSpec] artifacts. Works with **Claude Code, Cursor, and GitHub Copilot**.
 
 craft is **self-contained**. It installs nothing, invokes no other plugin, and spawns no
