@@ -1,14 +1,29 @@
 # craft — spec-driven SDLC toolkit
 
-Give it a **problem statement**; it drives explore → propose → implement → review → archive,
-emitting [OpenSpec] artifacts. Works with **Claude Code, Cursor, and GitHub Copilot**.
+**This is not AI writing code from scratch. This is an architect who already knows your codebase
+telling AI how to behave like one.**
+
+craft encodes the instincts a senior engineer carries — check what exists before writing, know
+the edge of your own knowledge, remember what was tried and reverted — into enforceable doctrine.
+Give it a problem statement; it drives explore → propose → implement → review → archive, emitting
+[OpenSpec] artifacts. Works with **Claude Code, Cursor, and GitHub Copilot**.
 
 craft is **self-contained**. It installs nothing, invokes no other plugin, and spawns no
 subagents. Every command is one file you can read top to bottom.
 
 ---
 
-## What makes it different
+## Why your team should adopt craft
+
+1. **Architect lens, not a fresher.** craft reads your codebase *before* reading the spec — like the senior who's been paged at 3am, not the intern who just read the ticket.
+2. **Anti-hallucination gate.** Every phase forces AI to declare `UNKNOWN:` — what it could not determine and what would resolve it. Silent assumptions become visible ones you correct in five seconds.
+3. **Reuse-first enforcement.** `/craft-apply` cannot write a test until it proves nothing reusable exists — killing the #1 AI defect: the fourth copy of a helper that already lives three files over.
+4. **Git as institutional memory.** "We tried that in March and reverted it" is knowledge no docs hold. craft derives it from `git log -S` and `blame`, and flags a diff that undoes a prior deliberate commit.
+5. **TDD Iron Law.** No production code without a failing test first. Wrote code before the test? Delete it, start over. The doctrine is blunt because the rationalizations are predictable.
+
+---
+
+## How it thinks
 
 **It behaves like the engineer who wrote your codebase, not one who just read the ticket.**
 
@@ -25,23 +40,6 @@ MODE:    grep-only
 
 `UNKNOWN:` may not be empty by default. An author knows the edge of their knowledge; a fresher
 assumes. That line turns a silent assumption into one you can correct in five seconds.
-
-**It looks before it writes.** `/craft-apply` cannot write a test until it has emitted
-`REUSE: extending X` or `NEW: searched <terms>, nothing found` — checked against the Reuse Map,
-the symbol table, and git history. The most common defect in AI-written code is the fourth copy
-of a helper that already exists; this is the thing that stops it.
-
-**It reads git as memory.** "We tried that in March and reverted it" is knowledge no index or
-language server holds. craft derives it — bounded `git log -S`, `--diff-filter=D`, `blame` — and
-a diff that undoes a prior deliberate commit is a review finding with the SHA attached.
-
-**It doesn't trust the docs blindly.** `scripts/craft-doctor.sh` verifies `CLAUDE.md` against
-reality — dead paths, missing binaries, stale sections — with no model involved. Anything it
-cannot prove is reported `UNCHECKED`, never `DRIFT`: a false drift signal is worse than none.
-
-**It learns.** `/craft-archive` writes back at most three lines to `CLAUDE.md` — a new shared
-utility, an established pattern, an approach that was tried and abandoned. The cap is what keeps
-it from becoming an auto-generated wiki, which measurably makes agents worse.
 
 ---
 

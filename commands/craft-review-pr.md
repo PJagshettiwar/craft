@@ -342,7 +342,24 @@ files matter most. A review spread thin over 2,000 lines finds nothing.
 
 ## Step 4 — Context
 
-**First: have you reviewed this PR before?** `gh pr view $PR_NUMBER --repo $OWNER/$REPO --comments`
+**First: kick off the comment fetch in the background, then keep going.** Do not wait for it —
+it is only needed at Step 5 when the findings table is built. `gh pr view --comments` misses
+inline review comments, so fetch all three, always, whether or not you have reviewed this PR
+before:
+
+```bash
+LEDGER=/tmp/pr-$PR_NUMBER-ledger.txt
+{
+  gh pr view $PR_NUMBER --repo $OWNER/$REPO --comments
+  gh api repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments --paginate --jq '.[] | {user:.user.login, path:.path, line:.line, body:.body}'
+  gh api repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews --paginate --jq '.[] | {user:.user.login, state:.state, body:.body}'
+} > $LEDGER 2>&1
+```
+
+Run that with `run_in_background: true` and move straight on to the diff below. Review the code
+blind to the ledger — that is the point: your findings stay independent of what others said.
+
+Existing discussion from ANY author — human or bot — is binding context, not just your own.
 
 Any prior review of yours makes this a **re-review** — those comments are the ledger, since
 GitHub remembers what your session does not. Narrow the diff below to what moved since that
@@ -356,6 +373,9 @@ NEW-SCOPE: <files since sha> + <sweeps re-run> + <preconditions checked>
 
 Re-sampling the whole diff instead is what makes each pass look like it found different
 problems. A finding outside both sets is genuinely new — say why the earlier pass missed it.
+
+The ledger match happens at **Step 5**, once `$LEDGER` has landed — not here. Nothing in Stages
+1-5 waits on it.
 
 ```bash
 gh pr diff $PR_NUMBER --repo $OWNER/$REPO --name-only
@@ -386,6 +406,17 @@ happy, error, timeout, shutdown.
 
 Check for: convention violations · dead code introduced · missing error handling traced through
 callers · scope creep beyond the PR description · new behaviour without a test.
+
+**Input-model check.** For every new literal or computed value the diff introduces (a timestamp,
+a default, a format string), check whether the input object already carries an equivalent that
+should be used instead. Read the input type's fields — a `System.currentTimeMillis()` next to a
+`CloudEvent.getTime()` is a finding. The input's value is more accurate and already paid for.
+
+**Downstream contract check.** When the diff builds or mutates a structure consumed outside this
+module (a map serialized to wire format, a DTO handed to another service, a record written to a
+store), trace one hop downstream: grep for the consumer, read its expectations, and verify the
+output satisfies them — required keys present, types correct, no silent field drops. A converter
+that sets one of three expected headers is incomplete even if the code compiles.
 
 **Conciseness & Reuse — the dimension a diff-reader misses.** Does this reimplement something
 that already exists? Check `## Reuse Map`, then search by symbol. Could it be stdlib, a native
@@ -419,6 +450,12 @@ Does the diff match the description? Flag changes it doesn't explain, and promis
 are missing. Flag drive-by refactors and formatting-only churn mixed into a behavioural PR.
 Note new dependencies, services or data flows, and whether they're justified.
 
+**Premise challenge.** Before accepting the PR's stated problem as given, trace how the input
+reaches the changed code. Is the null/empty/error case the PR guards against actually reachable
+in production? Grep for who constructs or populates the input — if every caller already
+guarantees the precondition, the fix may be unnecessary defensive code, or the real bug is
+upstream. State whether the premise is confirmed or unverified.
+
 ## Stage 5 — Self-verification
 
 1. **Citations** — verify each quote against what you captured when you first read it. No
@@ -434,7 +471,25 @@ with 60 nitpicks gets the whole review ignored, including the one finding that m
 
 ---
 
-## Step 5 — Terminal report
+## Step 5 — Join the ledger, then report
+
+Read `$LEDGER` now (the background fetch from Step 4; wait for it if still running). Match every
+finding you generated against it and set an **Already flagged** value — the finding stays in the
+table either way:
+
+| Ledger state | Already flagged | Posted inline? |
+|---|---|---|
+| Same defect, same file — any wording, still open | `@user (open)` | No |
+| Raised **and** author fixed it | `@user (fixed)` — verify the fix at HEAD | Only if the fix is wrong or incomplete: `@user (fixed-incorrectly)` |
+| Author **rejected** it with a reason | `@user (rejected)` | Only if you can refute the reason with quoted code — cite their reply |
+| Not in the ledger | `—` | Yes |
+
+Emit alongside the PRIOR/NEW-SCOPE block, before the report:
+
+```
+EXISTING: <n> findings by <authors>
+OVERLAP:  <n> of my findings already flagged — <n> new, <n> to post
+```
 
 ```markdown
 # PR Review: #<number> — <title>
@@ -460,8 +515,12 @@ with 60 nitpicks gets the whole review ignored, including the one finding that m
 
 ## Findings
 
-| # | Severity | Category | File | Line | Description |
-|---|---|---|---|---|---|
+| # | Severity | Category | File | Line | Already flagged | Description |
+|---|---|---|---|---|---|---|
+
+Every finding appears here — flagged ones included. `Already flagged` is `@user (open/fixed/
+fixed-incorrectly/rejected)` or `—` for new. Only `—` rows and `fixed-incorrectly` rows get
+posted at Step 6.
 
 ### Details
 **[N] `<file>`:<line>** (severity / category)
@@ -495,7 +554,10 @@ what gets posted; a finding that exists only in the terminal is one the next pas
 
 ## Step 6 — Offer to post
 
-**AskUserQuestion:** "Post these findings as PR review comments?"
+Only findings with `Already flagged` = `—` (or `fixed-incorrectly`) are candidates. Never post a
+comment restating what another reviewer already left.
+
+**AskUserQuestion:** "Post the <n> new findings as PR review comments?"
 1. Yes — post all · 2. No — terminal only · 3. Select — choose which
 
 On Select, show a numbered list and confirm before posting.
@@ -541,6 +603,7 @@ Failure → warn, don't block: "Could not remove worktree at `<path>`. Clean up 
 
 - **Never touch the current branch** — the worktree is detached at the PR's HEAD
 - **Never assume the base branch** — read it from the PR metadata
+- **Never re-report what another reviewer already flagged** — dedupe against all existing PR discussion first
 - **Never post without asking** — terminal report first, then explicit approval
 - **Always clean up** — Step 7 runs unconditionally
 - **Right repo** — match OWNER/REPO before creating anything
