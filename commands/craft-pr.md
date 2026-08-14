@@ -1,7 +1,7 @@
 ---
-description: Create a pull request using the project PR template, then collect a Claude Code experience survey and post it to Jira. Use after craft-archive completes successfully.
-argument-hint: "[jira-ticket-id]"
-allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
+description: Create a pull request using the project PR template, then collect a Claude Code experience survey. Use after craft-archive completes successfully.
+argument-hint: "[ticket-id]"
+allowed-tools: Read, Grep, Glob, Bash, Write, AskUserQuestion
 ---
 
 # /craft-pr — create PR + experience survey
@@ -25,14 +25,19 @@ If either is false, send the user back to /craft-archive.
 
 ## Part 1 — Create the Pull Request
 
-**Step 1** — Extract the Jira ticket ID from the current branch name (e.g. `FEVNT-10042` from
-`FEVNT-10042`), or use `$ARGUMENTS` if provided.
+**Step 1** — Extract a ticket ID from the current branch name, or use `$ARGUMENTS` if provided.
 
-**Step 2** — Read `.github/PULL_REQUEST_TEMPLATE.md` to get the PR body template.
+Look for a ticket pattern in this order:
+1. `## PR Config` in CLAUDE.md → `ticket-pattern:` regex (e.g. `ticket-pattern: FEVNT-\d+`)
+2. Common patterns: `[A-Z]+-\d+` (Jira-style), `#\d+` (GitHub Issues), `\d+` (plain number)
+3. If no match found, skip ticket linking — do not fail.
+
+**Step 2** — Read `.github/PULL_REQUEST_TEMPLATE.md` if it exists. If absent, use a minimal
+template: Summary, What Changed, and Reviewer Notes sections.
 
 **Step 3** — Fill in the template from the git context above:
 
-- **Title:** `<JIRA-ID> <short description inferred from commits>`
+- **Title:** `<ticket-ID> <short description inferred from commits>` (omit ticket prefix if none found)
 - **Risk and Impact Analysis:** assess based on what changed:
   - New features = medium risk
   - Config/infra changes = higher risk
@@ -82,8 +87,14 @@ Use **AskUserQuestion** to ask questions in groups (minimise interruptions):
 6. "How long did it actually take with Claude Code (end to end)?"
    Options: Under 1 hour / 1–4 hours / ~half a day / 1–2 days / More than 2 days
 
-**After all answers**, post a Jira comment using `mcp__mcp-atlassian__jira_add_comment`
-on the extracted Jira ticket ID:
+**After all answers**, post the survey results:
+
+1. **If** `mcp__mcp-atlassian__jira_add_comment` is available AND a Jira-style ticket ID was
+   extracted: post as a Jira comment on the ticket.
+2. **Otherwise:** write the survey to `survey-<branch-name>.md` in the project root and tell
+   the user where it is.
+
+In either case, display the formatted survey in the conversation:
 
 ```
 Ticket AI debrief:
@@ -107,7 +118,15 @@ Ticket AI debrief:
 <answer>
 ```
 
-Confirm to the user that the survey has been posted to the Jira ticket.
+**Log the survey locally** — append a JSON line to `.craft/survey-log.jsonl` (create if absent):
+
+```json
+{"date":"<ISO-8601>","branch":"<branch>","ticket":"<id>","manual_steps":"<answer1>","ai_pct":"<answer2>","training":"<answer3>","why_not_100":"<answer4>","time_without_ai":"<answer5>","time_with_ai":"<answer6>"}
+```
+
+This log accumulates across changes and enables aggregation without querying Jira.
+
+Confirm to the user that the survey has been posted (or saved) and logged locally.
 
 ---
 

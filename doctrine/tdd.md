@@ -13,7 +13,7 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 **Always:** new features · bug fixes · refactoring · behavior changes
 
-**Exceptions (ask your human partner):** throwaway prototypes · generated code · configuration files
+**Exceptions (ask your human partner):** throwaway prototypes · generated code · configuration files · legacy code with no test infrastructure (see Legacy escape below)
 
 Thinking "skip TDD just this once"? Stop. That's rationalization.
 
@@ -47,6 +47,23 @@ CLAUDE.md ## Commands (test, and test-single)
 
 An unresolvable test command is a hard stop, not a silent degrade — without it the Iron Law is
 a slogan. Below, `<TEST>` means the resolved single-test command.
+
+### Legacy escape
+
+When adding to code with **zero existing test coverage** AND no resolvable test command for
+this module, ask the user explicitly:
+
+> "No test infrastructure exists for this path. Skip TDD for this task? I'll record it."
+
+If they approve, emit the forced output line:
+
+```
+LEGACY: no test infrastructure for <path>, approved by user
+```
+
+This line is visible in review. The escape is a conscious, auditable decision — not a silent
+skip. It does not apply when a test command exists but the code is merely hard to test; that is
+a design problem, not a legacy problem.
 
 ### Red-Green-Refactor
 

@@ -76,27 +76,53 @@ degrades from about 70% context fill, and you do not want the review happening t
 | `/craft-pr` | PR from the project template + experience survey. |
 | `/craft-review-pr` | **Standalone.** Review any PR in an isolated worktree. Posts inline comments. |
 
-## Quick start
+## Quick start (5 minutes)
+
+**Prerequisites:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed.
 
 ```bash
-npm i -g @fission-ai/openspec@latest   # CLI >= 1.6.0
+# 1. Install OpenSpec CLI (required, >= 1.6.0)
+npm i -g @fission-ai/openspec@latest
 openspec init
+
+# 2. Install craft as a Claude Code plugin
+claude plugin add /path/to/craft
+# — or symlink manually: —
+# /craft-init handles this for you
 ```
 
-Then in Claude Code:
+**First session:**
 
 ```
 /craft-init
 ```
 
-It verifies or creates `CLAUDE.md`, drafts a Reuse Map with your approval, asks what your team
-has already tried and rejected, wires Cursor/Copilot, and — after measuring your repo — tells
-you honestly whether optional structural code intelligence is worth its per-session cost.
+This verifies or creates `CLAUDE.md`, drafts a Reuse Map with your approval, asks what your
+team has already tried and rejected, and wires Cursor/Copilot if present.
+
+**Start working:**
 
 ```
 /craft-sdlc "add rate limiting to the public API"
 /craft-sdlc "the login endpoint returns 500 when email has a plus sign"
 ```
+
+craft drives the full pipeline: explore, propose, implement (TDD), review, archive, PR.
+Each phase is one session. After each phase, `/compact` and run the next command.
+
+**Just want to review a PR?** `/craft-review-pr` works standalone — no setup beyond
+`/craft-init`.
+
+## What you need
+
+| Requirement | Required? | Notes |
+|---|---|---|
+| Claude Code | Yes | Primary runtime |
+| OpenSpec CLI >= 1.6.0 | Yes | `npm i -g @fission-ai/openspec@latest` |
+| git | Yes | Used for history lookups |
+| A test runner | Yes, for `/craft-apply` | Resolved from CLAUDE.md or auto-detected |
+| Cursor / Copilot | No | craft-init detects and wires if present |
+| Serena (LSP MCP) | No | Optional; craft degrades to grep |
 
 ## What's inside
 
@@ -120,6 +146,30 @@ craft/
 Doctrine is **inlined into commands at build time**, not referenced at runtime. Edit
 `doctrine/*.md`, run `scripts/sync-doctrine.sh`. Commands stay literally self-contained; there
 is no hop that can silently fail to happen.
+
+## Measuring impact
+
+`/craft-pr` collects a 6-question experience survey after every PR — time with AI vs without,
+percentage AI-written, manual steps needed. Results are logged locally to
+`.craft/survey-log.jsonl` (one JSON line per change) and optionally posted to Jira.
+
+**View your survey data:**
+
+```bash
+# Pretty-print all survey entries
+cat .craft/survey-log.jsonl | python3 -m json.tool --json-lines
+
+# Quick summary: time saved per change
+cat .craft/survey-log.jsonl | python3 -c "
+import json, sys
+for line in sys.stdin:
+    d = json.loads(line)
+    print(f\"{d['date'][:10]}  {d.get('ticket','—'):12s}  without={d['time_without_ai']:15s}  with={d['time_with_ai']:15s}  ai={d['ai_pct']}\")
+"
+```
+
+Even 5–10 entries make the ROI case concrete. If your team uses Jira, survey answers are also
+posted as ticket comments — search for "Ticket AI debrief" to aggregate across the project.
 
 ## Design principles
 
