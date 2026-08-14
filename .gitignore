@@ -1,3 +1,7 @@
-NOTES.md
+.DS_Store
+.claude/
+.craft/
 .idea/
+.worktrees/
+NOTES.md
 openspec/

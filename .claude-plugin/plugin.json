@@ -1,6 +1,6 @@
 {
   "name": "craft",
-  "description": "Lean, cross-IDE, self-configuring spec-driven SDLC toolkit. Give it a problem statement; it drives requirements to archive using OpenSpec, auto-selecting the right skill and model.",
+  "description": "Self-contained, cross-IDE spec-driven SDLC toolkit. Give it a problem statement; it drives explore to archive using OpenSpec, checking what already exists before it writes and declaring what it does not know. No subagents, no plugin dependencies.",
   "version": "0.1.0",
   "license": "MIT",
   "repository": "https://github.com/PJagshettiwar/craft",
