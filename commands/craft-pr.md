@@ -32,33 +32,94 @@ Look for a ticket pattern in this order:
 2. Common patterns: `[A-Z]+-\d+` (Jira-style), `#\d+` (GitHub Issues), `\d+` (plain number)
 3. If no match found, skip ticket linking — do not fail.
 
-**Step 2** — Read `.github/PULL_REQUEST_TEMPLATE.md` if it exists. If absent, use a minimal
-template: Summary, What Changed, and Reviewer Notes sections.
+**Step 2** — Find and read the template. Check these paths in order:
 
-**Step 3** — Fill in the template from the git context above:
+```bash
+ls .github/PULL_REQUEST_TEMPLATE.md .github/pull_request_template.md \
+   docs/PULL_REQUEST_TEMPLATE.md PULL_REQUEST_TEMPLATE.md 2>/dev/null
+```
+
+<HARD-GATE>
+If a template exists, the PR body **is** that file with its sections filled in. You may not
+substitute a body of your own design. Specifically forbidden: inventing `## Summary`,
+`## Test plan`, `## Changes`, or any heading the template does not contain.
+
+Compliance bots (Autodesk GitOps, and similar) parse the body for the template's exact
+headings. A well-written body with the wrong headings fails the check just as hard as an empty
+one, and the failure names the *template* rather than the missing heading — so it reads as a
+tooling bug and costs real time to diagnose.
+</HARD-GATE>
+
+If no template exists, use: Summary, What Changed, and Reviewer Notes.
+
+**Step 3** — Fill it in, obeying these rules:
+
+**Copy every `##` and `###` heading from the template, in the template's order.** Delete none,
+add none, reorder none. Then fill the bodies from the git context above:
 
 - **Title:** `<ticket-ID> <short description inferred from commits>` (omit ticket prefix if none found)
-- **Risk and Impact Analysis:** assess based on what changed:
+- **Risk / Impact / Security sections:** assess based on what changed:
   - New features = medium risk
   - Config/infra changes = higher risk
   - Tests/docs only = low risk
+  - Say explicitly whether the change touches a published artifact, a schema, or a service's
+    runtime path — that is what the reader actually needs.
 - **Overview:** summarise changes from commit messages and files changed
-- **What's Changed checkboxes:** check all that apply
-- **Features / Bug Fixes:** list from commit messages
-- **Reviewer Notes:** call out anything complex or non-obvious
-- Keep the **Release Agreement** section intact and unmodified
+- **Features / Bug Fixes:** list from commit messages. If a section does not apply, write
+  "None — <reason>" rather than deleting the heading or leaving it blank.
+- **Reviewer Notes:** call out anything complex or non-obvious. Include the verification you
+  actually ran, with real command output — not a claim that tests pass.
+- **Release Agreement / legal boilerplate:** reproduce byte-for-byte, comments included.
+
+Two rules that cause silent failures if broken:
+
+1. **Any section the template marks as mandatory must be non-empty.** Look for `MUST`,
+   `REQUIRED`, `DO NOT DELETE`, or bold/asterisk emphasis in the template's own prose. These
+   are usually the exact sections a bot checks for.
+2. **Checkbox lines are copied verbatim** — the full label text, not a shortened paraphrase.
+   Change only `[ ]` → `[x]`, and append your explanation after a trailing `:` where the
+   template invites one (`- [ ] Other, explain here:`). Tick at least one if the template says
+   "at least one".
 
 **Step 4** — Push if needed:
 ```bash
 git push -u origin HEAD
 ```
 
-**Step 5** — Create the PR:
+**Step 5** — Write the body to a file, then create the PR from it:
+
 ```bash
-gh pr create --title "<title>" --body "<filled template>"
+cat > /tmp/pr-body-$$.md <<'ENDBODY'
+<filled template>
+ENDBODY
+gh pr create --title "<title>" --body-file /tmp/pr-body-$$.md
 ```
 
-**Step 6** — Report the PR URL to the user.
+`--body-file` with a quoted heredoc, never inline `--body`: PR bodies contain backticks, `$`,
+and newlines, and inline passing lets the shell mangle or execute them.
+
+**Step 6** — Verify before reporting. Two checks, both cheap:
+
+```bash
+# a) Every template heading survived into the body
+diff <(grep -E '^#{2,3} ' .github/PULL_REQUEST_TEMPLATE.md) \
+     <(gh pr view <N> --json body --jq .body | grep -E '^#{2,3} ')
+
+# b) Compliance checks went green
+gh pr checks <N> | awk -F'\t' '$2!="pass"'
+```
+
+If (a) shows a missing heading, or (b) shows a failing template/risk/compliance check, fix the
+body and re-apply with `gh pr edit <N> --body-file <file>`, then re-run both. Checks may need a
+few seconds to re-run after an edit — wait for them rather than reporting the stale state. Do
+not hand the user a PR with a red compliance check and let them discover it.
+
+**Step 7** — Report the PR URL to the user.
+
+> **Enterprise GitHub:** `gh` subcommands taking `--repo <owner>/<repo>` resolve against
+> github.com by default and fail with "Could not resolve to a Repository" on an enterprise
+> host. Either run them from inside the repo without `--repo`, or prefix with the host:
+> `GH_HOST=git.autodesk.com gh pr view <N> --repo <owner>/<repo>`.
 
 ---
 
